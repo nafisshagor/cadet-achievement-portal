@@ -744,7 +744,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 
 /* ============================================================
-   PORTAL LAYOUT — SIDEBAR + MAIN
+   PORTAL LAYOUT â€” SIDEBAR + MAIN
 ============================================================ */
 #dashboardSection { display: flex; min-height: 100vh; }
 
@@ -1120,7 +1120,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   border-color: #10b981;
 }
 .staff-checkbox:checked::before {
-  content: '✓';
+  content: 'âœ“';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1655,7 +1655,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   margin-bottom: 0;
 }
 
-/* ─── Alumni (Golden) ─────────────────────────────────────── */
+/* â”€â”€â”€ Alumni (Golden) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .alumni-hero {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);
   border-color: rgba(217, 119, 6, 0.25);
@@ -1675,7 +1675,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 [data-theme="dark"] .alumni-title { color: #fef3c7; }
 [data-theme="dark"] .alumni-subtitle { color: #fde68a; }
 
-/* ─── Cadet Promotion (Blue) ───────────────────────────────── */
+/* â”€â”€â”€ Cadet Promotion (Blue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .promotion-hero {
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
   border-color: rgba(37, 99, 235, 0.25);
@@ -1695,7 +1695,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 [data-theme="dark"] .promotion-title { color: #dbeafe; }
 [data-theme="dark"] .promotion-subtitle { color: #bfdbfe; }
 
-/* ─── Manage Cadets (Green) ────────────────────────────────── */
+/* â”€â”€â”€ Manage Cadets (Green) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .manage-hero {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
   border-color: rgba(5, 150, 105, 0.25);
@@ -1732,7 +1732,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   font-weight: 900;
 }
 
-/* ─── Cadet Records (Purple) ───────────────────────────────── */
+/* â”€â”€â”€ Cadet Records (Purple) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .records-hero {
   background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%);
   border-color: rgba(124, 58, 237, 0.25);
@@ -1752,7 +1752,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 [data-theme="dark"] .records-title { color: #ede9fe; }
 [data-theme="dark"] .records-subtitle { color: #ddd6fe; }
 
-/* ─── Faculty Transfer (Red/Orange) ────────────────────────── */
+/* â”€â”€â”€ Faculty Transfer (Red/Orange) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .transfer-hero {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fca5a5 100%);
   border-color: rgba(220, 38, 38, 0.25);
@@ -2362,7 +2362,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 #toastRoot { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 40px); }
 
 /* ============================================================
-   RESPONSIVE — TABLET (≤1100px)
+   RESPONSIVE â€” TABLET (â‰¤1100px)
 ============================================================ */
 @media (max-width: 1100px) {
   .management-split { grid-template-columns: 1fr; }
@@ -2372,7 +2372,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 
 /* ============================================================
-   RESPONSIVE — MOBILE (≤900px)
+   RESPONSIVE â€” MOBILE (â‰¤900px)
 ============================================================ */
 @media (max-width: 900px) {
   .portal-sidebar {
@@ -2436,7 +2436,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 
 /* ============================================================
-   RESPONSIVE — SMALL MOBILE (≤560px)
+   RESPONSIVE â€” SMALL MOBILE (â‰¤560px)
 ============================================================ */
 @media (max-width: 560px) {
   .portal-content { padding: 12px; }
@@ -2612,23 +2612,23 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 
   #profileSection .p-6,
   #profileSection .p-8,
-  #profileSection .sm\\:p-8 {
+  #profileSection .sm\:p-8 {
     padding: 1rem 1.5cm !important;
   }
 
   /* Passport-style layout: details on left, photo on right */
-  #profileSection .grid.grid-cols-1.lg\\:grid-cols-\\[240px_1fr\\] {
+  #profileSection .grid.grid-cols-1.lg\:grid-cols-\[240px_1fr\] {
     display: block !important;
     position: relative !important;
     min-height: 160px !important;
   }
 
-  #profileSection .grid.grid-cols-1.lg\\:grid-cols-\\[240px_1fr\\] > div:first-child {
+  #profileSection .grid.grid-cols-1.lg\:grid-cols-\[240px_1fr\] > div:first-child {
     display: block !important;
     position: relative !important;
   }
 
-  #profileSection .grid.grid-cols-1.lg\\:grid-cols-\\[240px_1fr\\] > div:last-child {
+  #profileSection .grid.grid-cols-1.lg\:grid-cols-\[240px_1fr\] > div:last-child {
     margin-top: 1rem !important;
   }
 
@@ -2696,7 +2696,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   }
 
   .profile-detail-row .label::before {
-    content: '▸' !important;
+    content: 'â–¸' !important;
     color: #10b981 !important;
     font-size: 0.9rem !important;
     font-weight: 900 !important;
@@ -2744,7 +2744,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   }
 
   /* Ensure achievements section is full width below */
-  #profileSection .grid.grid-cols-1.lg\\:grid-cols-\\[240px_1fr\\] > div:last-child {
+  #profileSection .grid.grid-cols-1.lg\:grid-cols-\[240px_1fr\] > div:last-child {
     width: 100% !important;
     margin-top: 1rem !important;
   }
@@ -2763,7 +2763,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .hidden { display: none !important; }
 
 /* ============================================================
-   DARK MODE — SURFACE FIXES
+   DARK MODE â€” SURFACE FIXES
 ============================================================ */
 [data-theme="dark"] .glass,
 [data-theme="dark"] .portal-card,
@@ -2806,7 +2806,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 
 /* ============================================================
-   ANIMATED RIGHT ARROW BUTTON (Form Master → Cadet Profile)
+   ANIMATED RIGHT ARROW BUTTON (Form Master â†’ Cadet Profile)
 ============================================================ */
 .animated-arrow-btn {
   width: 36px;
@@ -2941,16 +2941,16 @@ body.login-mode { overflow: hidden; height: 100vh; }
   flex-shrink: 0;
 }
 
-/* ───────────────────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    COLOR CODES FOR SECTIONS
-   Main → Sub Shades:
-   - Inter House:        Amber/Gold (main → lighter shades)
-   - Inter Cadet College: Emerald (main → lighter shades)
-   - National:           Blue (main → lighter shades)
-   - International:      Purple (main → lighter shades)
-─────────────────────────────────────────────────────────── */
+   Main â†’ Sub Shades:
+   - Inter House:        Amber/Gold (main â†’ lighter shades)
+   - Inter Cadet College: Emerald (main â†’ lighter shades)
+   - National:           Blue (main â†’ lighter shades)
+   - International:      Purple (main â†’ lighter shades)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* Inter House — Amber/Gold Family */
+/* Inter House â€” Amber/Gold Family */
 .ach-type-inter-house {
   --section-main: #b45309;
   --section-mid: #d97706;
@@ -2964,7 +2964,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .ach-type-inter-house .ach-events-list { border-left-color: var(--section-light); }
 .ach-type-inter-house .ach-event-marker { background: var(--section-light); }
 
-/* Inter Cadet College — Emerald Family */
+/* Inter Cadet College â€” Emerald Family */
 .ach-type-inter-college {
   --section-main: #047857;
   --section-mid: #059669;
@@ -2978,7 +2978,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .ach-type-inter-college .ach-events-list { border-left-color: var(--section-light); }
 .ach-type-inter-college .ach-event-marker { background: var(--section-light); }
 
-/* National — Blue Family */
+/* National â€” Blue Family */
 .ach-type-national {
   --section-main: #1d4ed8;
   --section-mid: #2563eb;
@@ -2992,7 +2992,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .ach-type-national .ach-events-list { border-left-color: var(--section-light); }
 .ach-type-national .ach-event-marker { background: var(--section-light); }
 
-/* International — Purple Family */
+/* International â€” Purple Family */
 .ach-type-international {
   --section-main: #6d28d9;
   --section-mid: #7c3aed;
@@ -3006,7 +3006,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .ach-type-international .ach-events-list { border-left-color: var(--section-light); }
 .ach-type-international .ach-event-marker { background: var(--section-light); }
 
-/* Dark Mode — Use lighter shades for visibility */
+/* Dark Mode â€” Use lighter shades for visibility */
 [data-theme="dark"] .ach-type-inter-house {
   --section-main: #fbbf24;
   --section-mid: #f59e0b;
@@ -3028,7 +3028,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   --section-light: #7c3aed;
 }
 
-/* Type Body — vertical line container */
+/* Type Body â€” vertical line container */
 .ach-type-body {
   padding-left: 18px;
   border-left: 2px solid var(--border);
@@ -3047,7 +3047,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   letter-spacing: -0.005em;
 }
 
-/* Events List — same thickness as type-body line */
+/* Events List â€” same thickness as type-body line */
 .ach-events-list {
   padding-left: 16px;
   border-left: 2px solid var(--border);
@@ -3289,7 +3289,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
    STICKY PROFILE LEFT COLUMN (Photo + Details)
 ============================================================ */
 /* ============================================================
-   STICKY PROFILE LEFT COLUMN — DISABLED
+   STICKY PROFILE LEFT COLUMN â€” DISABLED
    (kept class for backward compat but not sticky anymore)
 ============================================================ */
 .profile-left-sticky {
