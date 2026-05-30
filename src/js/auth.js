@@ -32,7 +32,8 @@ export async function login() {
   const password = document.getElementById('password')?.value
 
   if (!facultyID || !password) {
-    showToast('Please enter ID and password.', 'warning')
+    shakeLoginForm()
+    showToast('Please enter your Faculty ID and password.', 'warning')
     return
   }
 
@@ -50,20 +51,41 @@ export async function login() {
   setButtonLoading('loginBtn', false)
 
   if (error) {
-    showToast(error.message, 'error')
+    // Wrong credentials: shake the form + clear password, no time-consuming animation
+    shakeLoginForm()
+    const friendly = /invalid login credentials/i.test(error.message)
+      ? 'Incorrect Faculty ID or password. Please try again.'
+      : error.message
+    showToast(friendly, 'error')
+    const passwordInput = document.getElementById('password')
+    if (passwordInput) {
+      passwordInput.value = ''
+      passwordInput.focus()
+    }
     return
   }
 
   // Show login animation
   showLoginOverlay()
 
-  // Wait for the animation to play before showing the portal
-  await new Promise(resolve => setTimeout(resolve, 1400))
+  // Wait for the animation to play before showing the portal (snappy)
+  await new Promise(resolve => setTimeout(resolve, 900))
 
   await showStaffPortal()
 
   // Hide the login overlay
   hideLoginOverlay()
+}
+
+// Shake the login form box to signal an error
+function shakeLoginForm() {
+  const box = document.querySelector('.login-form-box')
+  if (!box) return
+  box.classList.remove('login-shake')
+  // Force reflow so the animation can replay
+  void box.offsetWidth
+  box.classList.add('login-shake')
+  setTimeout(() => box.classList.remove('login-shake'), 500)
 }
 
 export async function logout() {
@@ -161,8 +183,8 @@ function showLoginOverlay() {
           <i class="fa-solid fa-check"></i>
         </div>
       </div>
-      <h3 class="login-title">Welcome Back</h3>
-      <p class="login-subtitle">Authenticating your access...</p>
+      <h3 class="login-ovl-title">Welcome Back</h3>
+      <p class="login-ovl-subtitle">Authenticating your access...</p>
       <div class="login-progress-bar">
         <div class="login-progress-fill"></div>
       </div>

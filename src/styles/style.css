@@ -3817,7 +3817,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   z-index: 2;
   opacity: 0;
   transform: scale(0);
-  animation: login-check-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 900ms forwards;
+  animation: login-check-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) 550ms forwards;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
@@ -3828,7 +3828,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   }
 }
 
-.login-title {
+.login-ovl-title {
   font-size: 1.5rem;
   font-weight: 800;
   color: white;
@@ -3836,7 +3836,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   letter-spacing: -0.01em;
 }
 
-.login-subtitle {
+.login-ovl-subtitle {
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
@@ -3858,7 +3858,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   border-radius: 999px;
   width: 100%;
   transform-origin: left;
-  animation: login-progress 1.2s ease-in-out forwards;
+  animation: login-progress 0.85s ease-in-out forwards;
 }
 
 @keyframes login-progress {
@@ -3867,5 +3867,71 @@ body.login-mode { overflow: hidden; height: 100vh; }
   }
   100% {
     transform: scaleX(1);
+  }
+}
+
+
+/* ============================================================
+   LOGIN ERROR SHAKE (wrong credentials feedback)
+============================================================ */
+@keyframes login-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-10px); }
+  30% { transform: translateX(9px); }
+  45% { transform: translateX(-7px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+.login-shake {
+  animation: login-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+.login-shake .form-input {
+  border-color: #ef4444 !important;
+}
+
+
+/* ============================================================
+   LOGIN/LOGOUT OVERLAY — MOBILE RESPONSIVE
+============================================================ */
+@media (max-width: 480px) {
+  .login-overlay-content,
+  .logout-overlay-content {
+    padding: 0 24px;
+    gap: 14px;
+  }
+  .login-icon-wrap,
+  .logout-icon-wrap {
+    width: 88px;
+    height: 88px;
+  }
+  .login-icon-circle,
+  .logout-icon-circle {
+    width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+  }
+  .login-ovl-title,
+  .logout-title {
+    font-size: 1.25rem;
+  }
+  .login-ovl-subtitle,
+  .logout-subtitle {
+    font-size: 0.8rem;
+  }
+  .login-progress-bar,
+  .logout-progress-bar {
+    width: 180px;
+  }
+}
+
+/* Respect reduced-motion preference for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .login-icon-ring,
+  .login-icon-ring.delay,
+  .logout-icon-ring,
+  .logout-icon-ring.delay,
+  .login-icon-circle,
+  .logout-icon-circle {
+    animation: none !important;
   }
 }
