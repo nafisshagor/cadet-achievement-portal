@@ -154,7 +154,7 @@ export async function loadStaffList() {
             <th style="width: 40px;">
               <input type="checkbox" id="selectAllStaff" class="staff-checkbox" title="Select all">
             </th>
-            <th>Staff ID</th>
+            <th>Faculty ID</th>
             <th>Full Name</th>
             <th>Role</th>
             <th>College</th>
@@ -261,7 +261,7 @@ async function openEditStaffModal(staffId, staffData) {
       </div>
       <div class="space-y-4">
         <div>
-          <label class="portal-label">Staff ID</label>
+          <label class="portal-label">Faculty ID</label>
           <input id="editStaffId" type="text" value="${escapeHTML(staff.staff_id)}" class="portal-input" readonly>
         </div>
         <div>
@@ -541,7 +541,7 @@ async function loadAssignmentList() {
   container.innerHTML = `
     <div class="portal-table-wrap">
       <table class="portal-table w-full text-sm">
-        <thead><tr><th>Intake</th><th>Form</th><th>Form Master</th><th>Staff ID</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Intake</th><th>Form</th><th>Form Master</th><th>Faculty ID</th><th>Actions</th></tr></thead>
         <tbody>
           ${assignments.map(row => {
             const profile = profileMap[row.staff_user_id] || {}

@@ -56,7 +56,7 @@
 html { scroll-behavior: smooth; font-size: 15px; }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Poppins', system-ui, sans-serif;
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--text);
@@ -66,6 +66,20 @@ body {
     var(--bg);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings use Poppins for character; body uses Plus Jakarta Sans for readability */
+h1, h2, h3, h4,
+.compact-section-title,
+.compact-page-title,
+.section-title,
+.stat-value-modern,
+.login-brand-title,
+.login-title {
+  font-family: 'Poppins', 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
@@ -1041,17 +1055,34 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 
 .stat-card-modern {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;
   box-shadow: var(--shadow);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   display: flex; flex-direction: column; gap: 12px;
+  overflow: hidden;
 }
+.stat-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #047857, #10b981);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.stat-card-modern:nth-child(2)::before { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+.stat-card-modern:nth-child(3)::before { background: linear-gradient(90deg, #6d28d9, #8b5cf6); }
 .stat-card-modern:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+.stat-card-modern:hover::before {
+  opacity: 1;
 }
 
 .stat-modern-header {
@@ -1063,6 +1094,10 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   place-items: center;
   font-size: 1.1rem; color: white;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 180ms ease;
+}
+.stat-card-modern:hover .stat-icon-modern {
+  transform: scale(1.08) rotate(-4deg);
 }
 .stat-icon-modern.green { background: linear-gradient(135deg, #047857, #10b981); }
 .stat-icon-modern.blue { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
@@ -1081,10 +1116,13 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 .stat-trend {
   display: flex; align-items: center; gap: 6px;
-  font-size: 0.78rem; color: var(--muted);
-  padding-top: 8px; border-top: 1px solid var(--border);
+  font-size: 0.76rem; color: var(--muted); font-weight: 600;
+  padding-top: 10px; border-top: 1px solid var(--border);
 }
-.stat-trend i { color: #10b981; font-size: 0.7rem; }
+.stat-trend i {
+  color: var(--primary);
+  font-size: 0.72rem;
+}
 
 .quick-action-btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1099,6 +1137,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   border-color: var(--primary);
   color: var(--primary);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(4,120,87,0.12);
 }
 .quick-action-btn i { font-size: 0.85rem; }
 

@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="https://vectorseek.com/wp-content/uploads/2024/02/Bangladesh-Cadet-College-Logo-Vector.svg-.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 
 <body class="login-mode">
@@ -35,7 +35,7 @@
       <div class="login-info-grid">
         <div class="login-info-item">
           <i class="fa-solid fa-shield-halved"></i>
-          <span>Military-Grade Security</span>
+          <span>Role-Based Access Control</span>
         </div>
         <div class="login-info-item">
           <i class="fa-solid fa-database"></i>
@@ -268,8 +268,8 @@
             </div>
             <p id="totalCadets" class="stat-value-modern">0</p>
             <div class="stat-trend">
-              <i class="fa-solid fa-arrow-up"></i>
-              <span>Active records</span>
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Cadets in your scope</span>
             </div>
           </div>
           <div class="stat-card-modern card-hover">
@@ -281,8 +281,8 @@
             </div>
             <p id="totalAchievements" class="stat-value-modern">0</p>
             <div class="stat-trend">
-              <i class="fa-solid fa-chart-line"></i>
-              <span>Total achievements</span>
+              <i class="fa-solid fa-medal"></i>
+              <span>Honours recorded</span>
             </div>
           </div>
           <div class="stat-card-modern card-hover">
@@ -383,7 +383,7 @@
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label class="portal-label">Full Name</label><input id="personalFullName" type="text" class="portal-input"></div>
-            <div><label class="portal-label">Staff ID</label><input id="personalStaffId" type="text" class="portal-input" readonly></div>
+            <div><label class="portal-label">Faculty ID</label><input id="personalStaffId" type="text" class="portal-input" readonly></div>
             <div><label class="portal-label">Role</label><input id="personalRole" type="text" class="portal-input" readonly></div>
             <div><label class="portal-label">College</label><input id="personalCollege" type="text" class="portal-input" readonly></div>
           </div>
@@ -717,11 +717,11 @@
           <div class="management-card no-padding">
             <div class="colored-card-header green-header">
               <h3>Register New Staff</h3>
-              <p>Add faculty, form masters, vice principals, and principals.</p>
+              <p>Add form masters, college admins, vice principals, and principals.</p>
             </div>
             <div class="form-stack">
               <div>
-                <label class="portal-label">Staff ID <span class="text-red-500">*</span></label>
+                <label class="portal-label">Faculty ID <span class="text-red-500">*</span></label>
                 <input id="staffId" type="text" placeholder="FM-00001 / BA-00000 / P-0254" class="portal-input">
               </div>
               <div>
