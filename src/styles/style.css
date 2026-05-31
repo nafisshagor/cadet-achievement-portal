@@ -2363,11 +2363,11 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   color: white;
 }
 
-/* Mobile icon-only buttons — top-right corner of hero */
+/* Mobile icon-only buttons — bottom-right corner of hero */
 .profile-hero-mobile-actions {
   display: none; /* hidden on desktop */
   position: absolute;
-  top: 14px;
+  bottom: 14px;
   right: 14px;
   z-index: 20;
   gap: 8px;
@@ -2422,8 +2422,6 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   }
   .profile-hero-name {
     font-size: 1.5rem;
-    /* Leave room for the top-right icon buttons */
-    padding-right: 90px;
   }
 }
 
