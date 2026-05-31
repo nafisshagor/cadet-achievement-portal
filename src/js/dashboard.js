@@ -3,8 +3,12 @@ import { getCurrentStaff } from './auth'
 import { setText } from './ui'
 
 export function renderDashboardForRole(staff) {
-  setText('portalTitle', 'Achievement Management Portal')
+  // Personalized greeting based on time of day
+  const greeting = getGreeting()
+  const firstName = (staff.full_name || '').split(' ')[0] || 'there'
+  setText('portalTitle', `${greeting}, ${firstName}`)
   setText('portalSubtitle', getSubtitle(staff.role))
+  setText('heroRoleTag', `${formatRole(staff.role)} · ${staff.college || 'CCAMS'}`)
   setText('staffName', staff.full_name)
   setText('staffRole', formatRole(staff.role))
   setText('staffCollege', staff.college)
@@ -207,6 +211,13 @@ function getSubtitle(role) {
   if (role === ROLES.VICE_PRINCIPAL) return 'View and monitor achievement records of your college.'
   if (role === ROLES.PRINCIPAL) return 'Principal overview of cadet achievement records.'
   return 'Private institutional staff portal.'
+}
+
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  return 'Good evening'
 }
 
 function formatRole(role) {

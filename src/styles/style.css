@@ -412,7 +412,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   text-align: center;
 }
 
-/* Right Side - Form */
+/* Right Side - Form (always light for consistent branding) */
 .login-form-container {
   padding: clamp(24px, 3.5vw, 32px);
   background: #ffffff;
@@ -420,9 +420,6 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   align-items: center;
   justify-content: center;
   overflow-y: auto;
-}
-[data-theme="dark"] .login-form-container {
-  background: #0f172a;
 }
 
 .login-form-box {
@@ -462,14 +459,11 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 .login-title {
   font-size: 1.6rem;
   font-weight: 900;
-  color: #0f172a;
+  color: #0f172a !important;
   margin-bottom: 5px;
   letter-spacing: -0.02em;
 }
-[data-theme="dark"] .login-title {
-  color: #f1f5f9;
-}
-
+/* Login screen keeps a fixed light aesthetic regardless of theme */
 .login-description {
   font-size: 0.8rem;
   color: #64748b;
@@ -501,9 +495,6 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-[data-theme="dark"] .form-label {
-  color: #cbd5e1;
-}
 .form-label i {
   font-size: 0.8rem;
   color: #10b981;
@@ -529,15 +520,6 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   border-color: #10b981;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
-}
-[data-theme="dark"] .form-input {
-  background: #1e293b;
-  border-color: #334155;
-  color: #f1f5f9;
-}
-[data-theme="dark"] .form-input:focus {
-  background: #0f172a;
-  border-color: #10b981;
 }
 
 .password-input-wrapper {
@@ -2542,6 +2524,113 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 }
 
 /* ============================================================
+   RESPONSIVE — PAGE HEROES, ALUMNI & ACHIEVEMENTS
+============================================================ */
+@media (max-width: 768px) {
+  /* Colored page hero banners */
+  .page-hero {
+    padding: 16px;
+  }
+  .page-hero-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.35rem;
+    border-radius: 14px;
+  }
+  .page-hero-title {
+    font-size: 1.2rem;
+  }
+  .page-hero-subtitle {
+    font-size: 0.8rem;
+  }
+  .page-hero-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+  }
+  .manage-total-pill {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+  }
+
+  /* Passed-out hero */
+  .passed-out-hero-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+
+  /* Promotion page stacks settings above roster */
+  .promotion-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Stat pills on passed-out page wrap */
+  .passed-out-stats {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .passed-out-stat-pill {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
+
+  /* Alumni achievement cards single column */
+  .alumni-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Year header in achievements smaller */
+  .ach-year-header {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+  }
+  .ach-year-body {
+    padding: 12px 14px;
+  }
+  .ach-type-body {
+    padding-left: 12px;
+  }
+  .ach-events-list {
+    padding-left: 10px;
+  }
+  .ach-competition-name {
+    font-size: 0.82rem;
+  }
+
+  /* Intake cards: 2 per row stays, but tighten padding */
+  .intake-card {
+    padding: 1.1rem 0.75rem;
+  }
+  .intake-card-value {
+    font-size: 1.2rem;
+  }
+  .intake-card-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 1.2rem;
+  }
+
+  /* Profile hero buttons stack */
+  .profile-hero-actions {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Intake cards single column on very small screens */
+  #intakeCardsContainer,
+  #manageIntakeCardsContainer,
+  #passedOutIntakeContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .page-hero-title { font-size: 1.05rem; }
+  .stat-value-modern { font-size: 1.8rem; }
+}
+
+/* ============================================================
    PRINT STYLES
 ============================================================ */
 @media print {
@@ -2792,8 +2881,7 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 /* ============================================================
    UTILITY CLASSES
 ============================================================ */
-.no-print { }
-.truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* Fix body overflow for login page */
 body.login-mode { overflow: hidden; height: 100vh; }
@@ -3325,14 +3413,11 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 
 /* ============================================================
-   STICKY PROFILE LEFT COLUMN (Photo + Details)
-============================================================ */
-/* ============================================================
-   STICKY PROFILE LEFT COLUMN â€” DISABLED
-   (kept class for backward compat but not sticky anymore)
+   PROFILE LEFT COLUMN (Photo + Details)
+   Flows naturally with the grid (not sticky)
 ============================================================ */
 .profile-left-sticky {
-  /* No sticky positioning - flows naturally with the grid */
+  align-self: start;
 }
 
 

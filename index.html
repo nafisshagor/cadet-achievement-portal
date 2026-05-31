@@ -251,7 +251,7 @@
               <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div class="flex-1">
-              <p class="text-xs font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1">Private Institutional Portal</p>
+              <p class="text-xs font-bold uppercase tracking-[0.25em] text-emerald-600 mb-1"><span id="heroRoleTag">Private Institutional Portal</span></p>
               <h2 id="portalTitle" class="text-2xl font-black text-slate-800 tracking-tight">Achievement Management Portal</h2>
               <p id="portalSubtitle" class="text-slate-500 mt-1 text-sm">Private staff control panel for 12 Cadet Colleges of Bangladesh.</p>
             </div>
@@ -316,6 +316,10 @@
                 <i class="fa-solid fa-users-viewfinder"></i>
                 <span>View Cadets</span>
               </button>
+              <button data-page="passedOutCadetsPage" class="quick-action-btn">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Alumni Records</span>
+              </button>
               <button data-page="addCadetPage" data-quick-role="system_admin,admin" class="quick-action-btn hidden">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>Add Cadet</span>
@@ -323,6 +327,10 @@
               <button data-page="staffRegistryPage" data-quick-role="system_admin,admin" class="quick-action-btn hidden">
                 <i class="fa-solid fa-users-gear"></i>
                 <span>Staff Registry</span>
+              </button>
+              <button data-page="personalInfoPage" class="quick-action-btn">
+                <i class="fa-solid fa-id-card"></i>
+                <span>My Profile</span>
               </button>
             </div>
           </div>
@@ -911,7 +919,7 @@
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-[400px_minmax(0,1fr)] gap-5">
+        <div class="promotion-grid grid grid-cols-1 xl:grid-cols-[400px_minmax(0,1fr)] gap-5">
           <!-- Left: Promotion Settings -->
           <div class="glass compact-card">
             <div class="flex items-center gap-3 mb-5">
