@@ -239,18 +239,18 @@ export async function renderProfile(cadet) {
     }
   }
 
-  // Add Achievement button (form masters only)
+  // Add Achievement button (form masters only) — wire both mobile and desktop versions
   const addAchievementBtn = document.getElementById('addAchievementFromProfileBtn')
-  if (addAchievementBtn) {
+  const addAchievementBtnDesktop = document.getElementById('addAchievementFromProfileBtnDesktop')
+  ;[addAchievementBtn, addAchievementBtnDesktop].forEach(btn => {
+    if (!btn) return
     if (canEdit) {
-      addAchievementBtn.classList.remove('hidden')
-      addAchievementBtn.onclick = () => {
-        openAchievementForm(cadet.id)
-      }
+      btn.classList.remove('hidden')
+      btn.onclick = () => { openAchievementForm(cadet.id) }
     } else {
-      addAchievementBtn.classList.add('hidden')
+      btn.classList.add('hidden')
     }
-  }
+  })
 
   // Store cadet id on photo upload button
   const photoUploadBtn = document.getElementById('uploadPhotoBtn')

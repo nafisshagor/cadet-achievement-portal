@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Profile ───────────────────────────────────────────────────────────────
   document.getElementById('backToCadetListBtn')?.addEventListener('click', closeProfile)
   document.getElementById('printBtn')?.addEventListener('click', printProfile)
+  document.getElementById('printBtnDesktop')?.addEventListener('click', printProfile)
   document.getElementById('uploadPhotoBtn')?.addEventListener('click', uploadProfilePhoto)
 
   // ── Achievements ──────────────────────────────────────────────────────────

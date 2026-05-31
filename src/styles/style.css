@@ -2363,6 +2363,35 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   color: white;
 }
 
+/* Mobile icon-only buttons — top-right corner of hero */
+.profile-hero-mobile-actions {
+  display: none; /* hidden on desktop */
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  gap: 8px;
+}
+.profile-hero-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.profile-hero-icon-btn i { pointer-events: none; }
+
+/* Desktop full-text buttons */
+.profile-hero-desktop-actions {
+  display: flex; /* shown on desktop */
+}
+
 /* Compact action buttons in the hero */
 .profile-hero-btn {
   display: inline-flex;
@@ -2382,18 +2411,19 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   font-size: 0.85rem;
   pointer-events: none;
 }
+
+/* On mobile: show icon buttons, hide desktop buttons */
 @media (max-width: 640px) {
+  .profile-hero-mobile-actions {
+    display: flex;
+  }
+  .profile-hero-desktop-actions {
+    display: none;
+  }
   .profile-hero-name {
     font-size: 1.5rem;
-  }
-  .profile-hero-btn {
-    padding: 9px 14px;
-    font-size: 0.8rem;
-    border-radius: 12px;
-    gap: 6px;
-  }
-  .profile-hero-btn span {
-    display: inline;
+    /* Leave room for the top-right icon buttons */
+    padding-right: 90px;
   }
 }
 
