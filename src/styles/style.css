@@ -1494,6 +1494,10 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   padding: 16px;
   overflow: hidden;
 }
+/* Ensure .hidden wins over the display:flex above */
+#achievementModal.hidden, #resetPasswordModal.hidden {
+  display: none !important;
+}
 #achievementModal > div, #resetPasswordModal > div {
   background: var(--surface-solid);
   border: 1px solid var(--border);
