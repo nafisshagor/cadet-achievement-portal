@@ -1124,39 +1124,17 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 .quick-action-btn i { font-size: 0.85rem; }
 
 /* ============================================================
+/* ============================================================
    STAFF TABLE IMPROVEMENTS
 ============================================================ */
 .staff-checkbox {
-  width: 18px; height: 18px; cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  border: 2px solid #475569;
-  border-radius: 4px;
-  background: transparent;
-  position: relative;
-  transition: all 160ms ease;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #10b981;
+  flex-shrink: 0;
 }
-.staff-checkbox:checked {
-  background: #10b981;
-  border-color: #10b981;
-}
-.staff-checkbox:checked::before {
-  content: 'âœ“';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 1;
-}
-.staff-checkbox:hover {
-  border-color: #10b981;
-}
-[data-theme="dark"] .staff-checkbox {
-  border-color: #64748b;
-}
+
 
 .staff-action-icon {
   width: 32px !important;
