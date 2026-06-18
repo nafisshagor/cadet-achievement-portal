@@ -943,7 +943,7 @@
                   <option value="XII_TO_PASSED_OUT">Class XII → Passed Out</option>
                 </select>
               </div>
-              <div>
+              <div id="promotionCollegeFilterWrap">
                 <label class="portal-label">Filter by College</label>
                 <select id="promotionCollegeFilter" class="portal-input">
                   <option value="">— Current College —</option>
@@ -1096,6 +1096,7 @@
             <option value="Inter-college">Inter Cadet College</option>
             <option value="National">National</option>
             <option value="International">International</option>
+            <option value="Academics">Academics</option>
           </select>
         </div>
         <div>
@@ -1105,33 +1106,241 @@
           </select>
         </div>
       </div>
-      <div>
-        <label class="portal-label">Competition Name <span class="text-red-500">*</span></label>
-        <input id="achievementTitle" type="text" placeholder="e.g. Music Competition, GK & IQ Competition, Math Olympiad" class="portal-input">
-        <p class="text-xs text-slate-400 mt-1.5">Will be displayed as: <span id="achievementPreview" class="font-semibold text-emerald-600">{Type} {Name} {Year}</span></p>
+
+      <!-- ── Competition fields (non-Academics) ── -->
+      <div id="competitionFields">
+        <div class="space-y-4">
+
+          <!-- Inter House only: Activity type + competition dropdown -->
+          <div id="interHouseFields" class="hidden space-y-3">
+            <div>
+              <label class="portal-label">Activity Type <span class="text-red-500">*</span></label>
+              <select id="ihActivityType" class="portal-input">
+                <option value="">— Select Activity Type —</option>
+                <option value="Co-Curricular">Co-Curricular</option>
+                <option value="Extra-Curricular">Extra-Curricular</option>
+              </select>
+            </div>
+            <div id="ihCompetitionWrap" class="hidden">
+              <label class="portal-label">Competition <span class="text-red-500">*</span></label>
+              <select id="ihCompetition" class="portal-input">
+                <option value="">— Select Competition —</option>
+              </select>
+            </div>
+            <!-- Athletics only: group selector (Running / Throwing / Jumping / Best Athlete) -->
+            <div id="ihAthlGroupWrap" class="hidden">
+              <label class="portal-label">Category <span class="text-red-500">*</span></label>
+              <select id="ihAthlGroup" class="portal-input">
+                <option value="">— Select Category —</option>
+              </select>
+            </div>
+            <div id="ihSubEventWrap" class="hidden">
+              <label class="portal-label">Event <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+              <select id="ihSubEvent" class="portal-input">
+                <option value="">— Select Event —</option>
+              </select>
+            </div>
+            <!-- Honour checkboxes: Best Player / Best Goalkeeper / Best Swimmer / Best Athlete -->
+            <div id="ihHonourWrap" class="hidden">
+              <label class="portal-label">Special Awards</label>
+              <div class="ih-honour-checks flex flex-wrap gap-3 mt-1"></div>
+            </div>
+          </div>
+
+          <!-- Non-Inter-House: free-text competition name -->
+          <div id="competitionNameWrap">
+            <label class="portal-label">Competition Name <span class="text-red-500">*</span></label>
+            <input id="achievementTitle" type="text" placeholder="e.g. Music Competition, GK & IQ Competition, Math Olympiad" class="portal-input">
+            <p class="text-xs text-slate-400 mt-1.5">Will be displayed as: <span id="achievementPreview" class="font-semibold text-emerald-600">{Type} {Name} {Year}</span></p>
+          </div>
+
+          <!-- Event field (non-Inter-House only) -->
+          <div id="competitionEventWrap">
+            <label class="portal-label">Event <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+            <input id="achievementEvent" type="text" placeholder="e.g. Tagore Song, Patriotic Song, Junior Group, Regional Round" class="portal-input">
+            <p class="text-xs text-slate-400 mt-1.5">Sub-event under the competition (for grouped achievements)</p>
+          </div>
+
+          <div id="ihPositionWrap">
+            <label class="portal-label">Position <span class="text-red-500">*</span></label>
+            <input id="achievementLevel" type="text" placeholder="e.g. 1st Position, Gold Medal, Qualified" class="portal-input">
+          </div>
+          <input id="achievementClass" type="hidden">
+          <div id="ihExtraWrap">
+            <label class="portal-label">Extra Achievements <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+            <input id="achievementExtra" type="text" placeholder="e.g. Best Singer, Most Valuable Player" class="portal-input">
+          </div>
+          <div id="ihRemarksWrap">
+            <label class="portal-label">Extra Remarks <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+            <input id="achievementRemarks" type="text" placeholder="Any additional remarks" class="portal-input">
+          </div>
+          <div id="ihDescriptionWrap">
+            <label class="portal-label">Description <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+            <textarea id="achievementDescription" placeholder="Brief description…" class="portal-input" rows="2"></textarea>
+          </div>
+        </div>
       </div>
-      <div>
-        <label class="portal-label">Event <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-        <input id="achievementEvent" type="text" placeholder="e.g. Tagore Song, Patriotic Song, Junior Group, Regional Round" class="portal-input">
-        <p class="text-xs text-slate-400 mt-1.5">Sub-event under the competition (for grouped achievements)</p>
+
+      <!-- ── Academics fields (shown only when Type = Academics) ── -->
+      <div id="academicsFields" class="hidden space-y-4">
+
+        <!-- Grade: 7,8,9,11 → 1st/2nd/3rd Term End Exam -->
+        <div id="acad-terms" class="hidden space-y-3">
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> 1st Term End Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-t1-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-t1-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> 2nd Term End Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-t2-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-t2-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> 3rd Term End Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-t3-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-t3-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade: 10 → 1st Term End, Pre-Test, Test -->
+        <div id="acad-grade10" class="hidden space-y-3">
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> 1st Term End Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g10-t1-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g10-t1-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> Pre-Test Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g10-pre-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g10-pre-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> Test Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g10-test-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g10-test-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade: 12 → Pre-Test, Test, Model-Test -->
+        <div id="acad-grade12" class="hidden space-y-3">
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> Pre-Test Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g12-pre-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g12-pre-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> Test Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g12-test-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g12-test-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+          <div class="acad-exam-block">
+            <p class="acad-exam-title"><i class="fa-solid fa-file-pen"></i> Model-Test Exam</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-g12-model-gpa" type="text" placeholder="e.g. 5.00" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">Position</label>
+                <input id="acad-g12-model-pos" type="number" min="1" placeholder="e.g. 3" class="portal-input">
+              </div>
+            </div>
+          </div>
+        </div>
+
+<!-- ── SSC / HSC → GPA + Board Position -->
+        <div id="acad-board" class="hidden space-y-3">
+          <div class="acad-exam-block">
+            <p class="acad-exam-title" id="acad-board-title"><i class="fa-solid fa-graduation-cap"></i> Board Exam Result</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="portal-label">Year <span class="text-red-500">*</span></label>
+                <input id="acad-board-year" type="number" min="1990" max="2099" placeholder="e.g. 2025" class="portal-input">
+              </div>
+              <div>
+                <label class="portal-label">GPA <span class="text-red-500">*</span></label>
+                <input id="acad-board-gpa" type="text" placeholder="e.g. 5.00 (Golden A+)" class="portal-input">
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="portal-label">Board Position <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+              <input id="acad-board-pos" type="text" placeholder="e.g. 2nd in board" class="portal-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared remarks for all academic grades -->
+        <div>
+          <label class="portal-label">Remarks <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+          <textarea id="acad-remarks" placeholder="Any additional remarks…" class="portal-input" rows="2"></textarea>
+        </div>
       </div>
-      <div>
-        <label class="portal-label">Position <span class="text-red-500">*</span></label>
-        <input id="achievementLevel" type="text" placeholder="e.g. 1st Position, Gold Medal, Qualified" class="portal-input">
-      </div>
-      <input id="achievementClass" type="hidden">
-      <div>
-        <label class="portal-label">Extra Achievements <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-        <input id="achievementExtra" type="text" placeholder="e.g. Best Singer, Most Valuable Player" class="portal-input">
-      </div>
-      <div>
-        <label class="portal-label">Extra Remarks <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-        <input id="achievementRemarks" type="text" placeholder="Any additional remarks" class="portal-input">
-      </div>
-      <div>
-        <label class="portal-label">Description <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-        <textarea id="achievementDescription" placeholder="Brief description…" class="portal-input" rows="2"></textarea>
-      </div>
+
       <button id="saveAchievementBtn" class="portal-btn-primary w-full py-3.5">
         <i class="fa-solid fa-floppy-disk"></i> Save Achievement
       </button>

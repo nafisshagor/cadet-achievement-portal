@@ -4089,3 +4089,207 @@ body.login-mode { overflow: hidden; height: 100vh; }
     animation: none !important;
   }
 }
+
+/* ============================================================
+   ACADEMICS RESULT FORM
+============================================================ */
+.acad-exam-block {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.acad-exam-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ============================================================
+   ACADEMICS RESULT DISPLAY (Profile View)
+============================================================ */
+.ach-type-academics .ach-type-header h4 { color: #0e7490; }
+.ach-type-academics .ach-type-bullet { background: #0891b2; }
+.ach-type-academics .ach-type-body { border-left-color: #0891b2; }
+.ach-type-academics .ach-competition-name { color: #0891b2; }
+.ach-type-academics .ach-events-list { border-left-color: #22d3ee; }
+.ach-type-academics .ach-event-marker { background: #22d3ee; }
+
+.acad-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.acad-result-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.acad-result-card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.acad-result-card-gpa {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.acad-result-card-pos {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  margin-top: 2px;
+}
+
+.acad-board-result {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #6ee7b7;
+  border-radius: 14px;
+  padding: 14px 18px;
+}
+
+.acad-board-gpa-big {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.acad-board-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
+}
+
+.acad-board-pos-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* Print overrides for academics */
+@media print {
+  .ach-type-academics .ach-type-header h4 { color: #0e7490 !important; }
+  .ach-type-academics .ach-type-bullet { background: #0891b2 !important; }
+  .ach-type-academics .ach-type-body { border-left-color: #0891b2 !important; }
+  .ach-type-academics .ach-competition-name { color: #0891b2 !important; }
+  .ach-type-academics .ach-events-list { border-left-color: #22d3ee !important; }
+  .ach-type-academics .ach-event-marker { background: #22d3ee !important; }
+  .acad-board-result { background: white !important; border-color: #6ee7b7 !important; }
+}
+
+/* ============================================================
+   INTER HOUSE ACTIVITY BADGE
+============================================================ */
+.ih-activity-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(5,150,105,0.12);
+  color: #047857;
+  vertical-align: middle;
+  border: 1px solid rgba(5,150,105,0.25);
+}
+
+@media print {
+  .ih-activity-badge {
+    background: #d1fae5 !important;
+    color: #047857 !important;
+    border-color: #6ee7b7 !important;
+  }
+}
+
+/* ============================================================
+   IH HONOUR CHECKBOXES + HONOUR BADGE
+============================================================ */
+.ih-honour-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #92400e;
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.ih-honour-label:hover {
+  background: rgba(245,158,11,0.15);
+  border-color: rgba(245,158,11,0.45);
+}
+.ih-honour-label input[type="checkbox"] {
+  accent-color: #f59e0b;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+[data-theme="dark"] .ih-honour-label {
+  background: rgba(245,158,11,0.12);
+  border-color: rgba(245,158,11,0.3);
+  color: #fcd34d;
+}
+
+.ach-honour-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(245,158,11,0.12);
+  color: #b45309;
+  border: 1px solid rgba(245,158,11,0.3);
+  margin-right: 4px;
+}
+[data-theme="dark"] .ach-honour-badge {
+  background: rgba(245,158,11,0.15);
+  color: #fcd34d;
+  border-color: rgba(245,158,11,0.35);
+}
+.ach-honours-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+@media print {
+  .ach-honour-badge {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+  }
+}

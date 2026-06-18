@@ -2,7 +2,7 @@ import { supabase, ROLES, COLLEGES } from './supabase'
 import { getCurrentStaff } from './auth'
 import { showToast, setButtonLoading, escapeHTML, formatHouse } from './ui'
 
-// ─── Staff Registration (client-side, no serverless function needed) ──────────
+// ─── Staff Registration ───────────────────────────────────────────────────────
 
 export async function registerStaff() {
   const currentStaff = getCurrentStaff()
@@ -15,17 +15,22 @@ export async function registerStaff() {
   const staffId = document.getElementById('staffId')?.value.trim()
   const fullName = document.getElementById('staffFullName')?.value.trim()
   const role = document.getElementById('staffRoleSelect')?.value
-  // System admins can pick a college; college admins are restricted to their own
-  // System admin accounts themselves don't need a college (they're cross-college)
+
+  // College logic:
+  // - system_admin role → 'System' placeholder (cross-college)
+  // - system_admin user registering others → pick from dropdown
+  // - college admin registering others → always their own college (no picker)
   const collegeSelect = document.getElementById('staffCollegeSelect')
   let college = ''
   if (role === 'system_admin') {
-    college = 'System' // Placeholder - system admins aren't tied to a college
+    college = 'System'
   } else if (currentStaff.role === ROLES.SYSTEM_ADMIN) {
     college = collegeSelect?.value || ''
   } else {
+    // College admin: always own college, no selection allowed
     college = currentStaff.college
   }
+
   const password = document.getElementById('staffInitialPassword')?.value.trim()
 
   if (!staffId || !fullName || !role || !password) {
@@ -33,14 +38,13 @@ export async function registerStaff() {
     return
   }
 
-  // College is required only for non-system-admin roles when current user is system admin
   if (currentStaff.role === ROLES.SYSTEM_ADMIN && role !== 'system_admin' && !college) {
     showToast('Please select a college for this staff member.', 'warning')
     return
   }
 
-  if (password.length < 5) {
-    showToast('Password must be at least 5 characters.', 'warning')
+  if (password.length < 6) {
+    showToast('Password must be at least 6 characters.', 'warning')
     return
   }
 
@@ -50,7 +54,6 @@ export async function registerStaff() {
     return
   }
 
-  // Only system admins can create system admins
   if (role === 'system_admin' && currentStaff.role !== ROLES.SYSTEM_ADMIN) {
     showToast('Only system admins can create system admin accounts.', 'error')
     return
@@ -58,56 +61,127 @@ export async function registerStaff() {
 
   setButtonLoading('registerStaffBtn', true, 'Registering...')
 
+  // Capture admin session BEFORE signUp (signUp silently replaces the session)
+  const { data: adminSessionData } = await supabase.auth.getSession()
+  const adminRefreshToken = adminSessionData?.session?.refresh_token
+  const adminUserId       = adminSessionData?.session?.user?.id
+
   try {
-    const email = staffId.includes('@')
+    const newEmail = staffId.includes('@')
       ? staffId.toLowerCase()
       : `${staffId.toLowerCase()}@asys.local`
 
-    // Use supabase.auth.signUp to create the user
+    // ── Step 1: Create the auth user ──────────────────────────────────────────
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email,
+      email: newEmail,
       password,
       options: {
-        data: {
-          staff_id: staffId,
-          full_name: fullName,
-          role,
-          college
-        }
+        data: { staff_id: staffId, full_name: fullName, role, college }
       }
     })
 
+    // ── Handle "User already registered" ─────────────────────────────────────
+    // This happens when the auth user exists but their staff_profiles row was
+    // previously deleted by removeStaff (which only deletes the profile row).
     if (signUpError) {
-      throw new Error(signUpError.message)
+      const alreadyExists = /already registered|user already exists/i.test(signUpError.message)
+      if (!alreadyExists) {
+        // Restore admin session before throwing
+        if (adminRefreshToken) {
+          await supabase.auth.refreshSession({ refresh_token: adminRefreshToken })
+        }
+        throw new Error(signUpError.message)
+      }
+
+      // Restore admin session so we can update the profile
+      if (adminRefreshToken) {
+        await supabase.auth.refreshSession({ refresh_token: adminRefreshToken })
+      }
+
+      // Auth user exists — try to find their profile by staff_id
+      const { data: existingProfile } = await supabase
+        .from('staff_profiles')
+        .select('id')
+        .eq('staff_id', staffId)
+        .maybeSingle()
+
+      if (existingProfile) {
+        const { error: updateErr } = await supabase
+          .from('staff_profiles')
+          .update({ full_name: fullName, role, college })
+          .eq('staff_id', staffId)
+
+        if (updateErr) throw new Error(updateErr.message)
+        clearStaffForm()
+        showToast('Staff profile updated (auth account already existed).', 'info')
+      } else {
+        throw new Error(
+          `Auth account for "${staffId}" already exists but has no profile. ` +
+          `Delete the user from Supabase Auth dashboard, then register again.`
+        )
+      }
+
+      await reloadStaffListSafely(adminUserId)
+      return
     }
 
-    if (!signUpData.user) {
-      throw new Error('Failed to create user account.')
-    }
+    if (!signUpData?.user) throw new Error('Failed to create user account.')
 
-    // Insert staff profile
+    // ── Step 2: Insert staff profile WHILE new user session is active ─────────
+    // At this point the Supabase client is signed in as the new user.
+    // RLS on staff_profiles typically allows: id = auth.uid() for INSERT.
+    // We insert now while auth.uid() == signUpData.user.id so RLS is satisfied.
     const { error: profileError } = await supabase
       .from('staff_profiles')
       .insert([{
-        id: signUpData.user.id,
-        staff_id: staffId,
+        id:        signUpData.user.id,
+        staff_id:  staffId,
         full_name: fullName,
         role,
         college
       }])
 
-    if (profileError) {
-      throw new Error(profileError.message)
+    // ── Step 3: Restore admin session ─────────────────────────────────────────
+    if (adminRefreshToken) {
+      const { error: restoreErr } = await supabase.auth.refreshSession({ refresh_token: adminRefreshToken })
+      if (restoreErr) {
+        console.warn('Could not restore admin session via refresh token:', restoreErr.message)
+      }
     }
+
+    if (profileError) throw new Error(profileError.message)
 
     clearStaffForm()
     showToast('Staff registered successfully.')
-    await loadStaffList()
+
   } catch (error) {
+    // Always try to restore admin session on error
+    if (adminRefreshToken) {
+      await supabase.auth.refreshSession({ refresh_token: adminRefreshToken }).catch(() => {})
+    }
     showToast(error.message, 'error')
   } finally {
+    await reloadStaffListSafely(adminUserId)
     setButtonLoading('registerStaffBtn', false)
   }
+}
+
+/**
+ * Reload the staff list after registration.
+ * Re-reads currentStaff from the database to make sure it reflects the
+ * restored admin session (not the briefly-active new-user session).
+ */
+async function reloadStaffListSafely(adminUserId) {
+  if (!adminUserId) {
+    await loadStaffList()
+    return
+  }
+  // Re-fetch the admin's own profile to refresh the in-memory currentStaff
+  const { refreshCurrentStaff } = await import('./auth')
+  if (typeof refreshCurrentStaff === 'function') {
+    await refreshCurrentStaff()
+  }
+  await loadStaffList()
 }
 
 // ─── Staff List ───────────────────────────────────────────────────────────────
@@ -123,12 +197,15 @@ export async function loadStaffList() {
   container.innerHTML = `<p class="text-slate-500 text-sm py-4">Loading staff...</p>`
 
   // System admins see all staff across all colleges; college admins see only their college
+  // College admins never see system_admin accounts — those are cross-college and irrelevant to them.
   let query = supabase
     .from('staff_profiles')
     .select('*')
 
   if (currentStaff.role !== ROLES.SYSTEM_ADMIN) {
-    query = query.eq('college', currentStaff.college)
+    query = query
+      .eq('college', currentStaff.college)
+      .neq('role', ROLES.SYSTEM_ADMIN)
   }
 
   const { data, error } = await query.order('full_name', { ascending: true })
@@ -327,13 +404,21 @@ async function removeStaff(staffId) {
   if (!confirmed) return
 
   try {
-    // Remove from staff_profiles (auth user remains but can't log in without profile)
-    const { error } = await supabase
+    const { error, count } = await supabase
       .from('staff_profiles')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('id', staffId)
 
     if (error) throw new Error(error.message)
+
+    // count === 0 means RLS blocked the delete silently — the row was not deleted
+    if (count === 0) {
+      throw new Error(
+        'Delete was blocked by a database security policy. ' +
+        'Make sure the RLS policies on staff_profiles allow admins to delete rows. ' +
+        'Run the SQL fix script in Supabase to resolve this.'
+      )
+    }
 
     showToast('Staff member removed.')
     await loadStaffList()
@@ -360,15 +445,22 @@ export async function bulkDeleteStaff() {
 
   try {
     const idsArray = Array.from(selectedStaffIds)
-    
-    const { error } = await supabase
+
+    const { error, count } = await supabase
       .from('staff_profiles')
-      .delete()
+      .delete({ count: 'exact' })
       .in('id', idsArray)
 
     if (error) throw new Error(error.message)
 
-    showToast(`${idsArray.length} staff member(s) removed.`)
+    if (count === 0) {
+      throw new Error(
+        'Delete was blocked by a database security policy. ' +
+        'Run the SQL fix script in Supabase to resolve this.'
+      )
+    }
+
+    showToast(`${count} staff member(s) removed.`)
     selectedStaffIds.clear()
     await loadStaffList()
   } catch (error) {
@@ -721,7 +813,12 @@ export async function loadPromotionCadets() {
   container.innerHTML = `<div class="text-center py-10 text-slate-500">Loading cadets...</div>`
 
   let query = supabase.from('cadets').select('*').eq('class_name', mapping.from)
-  query = query.eq('college', collegeFilter || currentStaff.college)
+  // College admins are always scoped to their own college; only system admins
+  // can use the college filter dropdown to cross colleges.
+  const effectiveCollege = currentStaff.role === ROLES.SYSTEM_ADMIN
+    ? (collegeFilter || currentStaff.college)
+    : currentStaff.college
+  query = query.eq('college', effectiveCollege)
 
   const { data, error } = await query.order('cadet_no', { ascending: true })
 

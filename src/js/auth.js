@@ -9,6 +9,26 @@ export function getCurrentStaff() {
   return currentStaff
 }
 
+/**
+ * Re-fetch the current user's staff profile from the database and update the
+ * in-memory currentStaff object.  Call this after any operation that may have
+ * temporarily replaced the active Supabase session (e.g. signUp for new staff).
+ */
+export async function refreshCurrentStaff() {
+  const { data: userData } = await supabase.auth.getUser()
+  if (!userData?.user) return
+
+  const { data: profile } = await supabase
+    .from('staff_profiles')
+    .select('*')
+    .eq('id', userData.user.id)
+    .single()
+
+  if (profile) {
+    currentStaff = profile
+  }
+}
+
 // Password toggle functionality
 export function initPasswordToggle() {
   const toggleBtn = document.getElementById('togglePassword')

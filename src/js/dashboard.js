@@ -1,6 +1,6 @@
 import { supabase, ROLES } from './supabase'
 import { getCurrentStaff } from './auth'
-import { setText } from './ui'
+import { setText, escapeHTML } from './ui'
 
 export function renderDashboardForRole(staff) {
   // Personalized greeting based on time of day
@@ -51,6 +51,44 @@ export function renderDashboardForRole(staff) {
       staffCollegeWrap.classList.remove('hidden')
     } else {
       staffCollegeWrap.classList.add('hidden')
+    }
+  }
+
+  // ── Bulk cadet upload: college admin sees only their own college ──────────
+  const bulkCollegeSelect = document.getElementById('bulkCollegeSelect')
+  if (bulkCollegeSelect) {
+    const wrapper = bulkCollegeSelect.closest('div') || bulkCollegeSelect.parentElement
+    if (staff.role !== ROLES.SYSTEM_ADMIN) {
+      // Hide the dropdown and show a locked read-only label instead
+      bulkCollegeSelect.style.display = 'none'
+      // Auto-select the admin's college so the value is ready for the upload function
+      for (const opt of bulkCollegeSelect.options) {
+        opt.selected = opt.value === staff.college || opt.text === staff.college
+      }
+      if (wrapper && !wrapper.querySelector('.college-locked-info')) {
+        const lockedEl = document.createElement('div')
+        lockedEl.className = 'college-locked-info portal-input bg-slate-50 text-slate-600 flex items-center gap-2 cursor-not-allowed'
+        lockedEl.innerHTML = `<i class="fa-solid fa-lock text-slate-400 text-xs"></i> ${escapeHTML(staff.college)}`
+        wrapper.appendChild(lockedEl)
+      }
+    } else {
+      // System admin: restore the dropdown
+      bulkCollegeSelect.style.display = ''
+      wrapper?.querySelector('.college-locked-info')?.remove()
+    }
+  }
+
+  // ── Cadet promotion: college admin sees their college as a locked label ───
+  const promotionCollegeFilterWrap = document.getElementById('promotionCollegeFilterWrap')
+  const promotionCollegeFilter     = document.getElementById('promotionCollegeFilter')
+  if (promotionCollegeFilterWrap && promotionCollegeFilter) {
+    if (staff.role !== ROLES.SYSTEM_ADMIN) {
+      // Hide the filter entirely — promotion JS always uses currentStaff.college for non-system-admins
+      promotionCollegeFilterWrap.classList.add('hidden')
+      // Clear any previously set filter value so it can never accidentally cross colleges
+      promotionCollegeFilter.value = ''
+    } else {
+      promotionCollegeFilterWrap.classList.remove('hidden')
     }
   }
 

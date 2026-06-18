@@ -372,7 +372,10 @@ export async function bulkUploadCadets() {
 
   const role = document.getElementById('bulkRoleSelect')?.value
   const intake = document.getElementById('bulkIntakeInput')?.value.trim()
-  const selectedCollege = document.getElementById('bulkCollegeSelect')?.value
+  // College admins are locked to their own college; system admins pick from dropdown
+  const selectedCollege = staff.role === ROLES.SYSTEM_ADMIN
+    ? (document.getElementById('bulkCollegeSelect')?.value || '')
+    : staff.college
   const file = document.getElementById('bulkCadetFile')?.files?.[0]
   const previewArea = document.getElementById('bulkPreviewArea')
   const button = document.getElementById('bulkUploadBtn')
