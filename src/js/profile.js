@@ -378,18 +378,30 @@ export async function printProfile() {
     if (prevTheme) html.setAttribute('data-theme', prevTheme)
     else html.removeAttribute('data-theme')
     window.removeEventListener('afterprint', cleanup)
+    clearTimeout(fallbackTimer)
   }
   window.addEventListener('afterprint', cleanup)
-  setTimeout(cleanup, 3000) // fallback
+  // Fallback: remove frame 30s after print() in case afterprint never fires
+  const fallbackTimer = setTimeout(cleanup, 30000)
 
-  window.print()
+  // Small delay to let the browser render the frame before opening print dialog
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()))
 }
 
 // ─── Parse academic achievement for print ────────────────────────────────────
 
+// Map from grade labels (as stored) to the Roman class keys used in the print table
+const GRADE_TO_ROMAN = {
+  '7th Grade': 'VII',  '8th Grade': 'VIII', '9th Grade': 'IX',
+  '10th Grade': 'X',   '11th Grade': 'XI',  '12th Grade': 'XII',
+  'SSC': 'SSC',        'HSC': 'HSC'
+}
+// Also allow direct Roman class (from the `class` meta field)
+const ROMAN_CLASSES = new Set(['VII','VIII','IX','X','XI','XII','SSC','HSC'])
+
 function parseAcademicForPrint(item) {
   const desc = item.description || ''
-  let layout = 'terms', gradeLabel = '', year = ''
+  let layout = 'terms', gradeLabel = '', className = '', year = ''
   const examData = {}
 
   if (item.achievement_date) {
@@ -403,11 +415,26 @@ function parseAcademicForPrint(item) {
       const val = valParts.join('=')
       if      (key === 'layout')  layout     = val
       else if (key === 'grade')   gradeLabel = val
+      else if (key === 'class')   className  = val
       else if (key === 'year')    year       = val
       else                        examData[key] = val
     })
   }
-  return { layout, gradeLabel, year, examData }
+
+  // Resolve the Roman class key for the print table:
+  // 1. Use className if it's a known Roman class (most reliable)
+  // 2. Otherwise map gradeLabel ("7th Grade" → "VII")
+  // 3. Fallback to gradeLabel itself (covers "SSC" / "HSC")
+  let romanKey = ''
+  if (ROMAN_CLASSES.has(className)) {
+    romanKey = className
+  } else if (GRADE_TO_ROMAN[gradeLabel]) {
+    romanKey = GRADE_TO_ROMAN[gradeLabel]
+  } else if (ROMAN_CLASSES.has(gradeLabel)) {
+    romanKey = gradeLabel
+  }
+
+  return { layout, gradeLabel: romanKey, year, examData }
 }
 
 // ─── Extract activity type from achievement META ──────────────────────────────
