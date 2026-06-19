@@ -4470,8 +4470,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: #f0fdf4;
   font-weight: 600;
   color: #374151;
-  font-size: 6pt;
-  white-space: nowrap;
+  font-size: 5.5pt;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 28pt;
 }
 .pt-acad-cell { color: #64748b; }
 .pt-acad-cell.pt-has-val {
@@ -4490,61 +4492,66 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* ── Achievement container — full width ──────────────────── */
 .pt-ach-container {
+  display: table;
   width: 100%;
-  border: 0.5pt solid #cbd5e1;
+  border-collapse: collapse;
+  border: 0.75pt solid #a7f3d0;
   border-radius: 3pt;
   overflow: hidden;
   flex-shrink: 0;
+  table-layout: fixed;
 }
 
 /* ── Achievement group — one row in the table ────────────── */
 .pt-group {
-  display: flex;
-  align-items: stretch;
+  display: table-row;
   width: 100%;
-  border-bottom: 0.5pt solid #e2e8f0;
 }
-.pt-group:last-child { border-bottom: none; }
+.pt-group:last-child .pt-group-label,
+.pt-group:last-child .pt-group-items { border-bottom: none; }
 
-.pt-grp-ih-co  { background: #f0f9ff; }
-.pt-grp-ih-ex  { background: #faf5ff; }
-.pt-grp-icc    { background: #fffbeb; }
-.pt-grp-nat    { background: #fef2f2; }
-.pt-grp-intl   { background: #eef2ff; }
+/* row backgrounds removed — applied on cells above */
 
 /* Left cell: coloured label */
+/* Left cell: coloured label */
 .pt-group-label {
+  display: table-cell;
   font-size: 6pt;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #047857;
-  white-space: nowrap;
-  width: 88pt;
-  min-width: 88pt;
-  max-width: 88pt;
-  flex-shrink: 0;
+  white-space: normal;
+  width: 82pt;
+  min-width: 82pt;
+  max-width: 82pt;
   padding: 3pt 5pt;
   border-right: 2pt solid #10b981;
-  display: flex;
-  align-items: center;
+  border-bottom: 0.5pt solid #d1fae5;
+  vertical-align: middle;
   background: rgba(16,185,129,0.08);
+  word-break: break-word;
 }
-.pt-grp-ih-co  .pt-group-label { color: #0e7490; border-right-color: #0891b2; background: rgba(8,145,178,0.08); }
-.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; border-right-color: #8b5cf6; background: rgba(139,92,246,0.08); }
-.pt-grp-icc    .pt-group-label { color: #b45309; border-right-color: #f59e0b; background: rgba(245,158,11,0.08); }
-.pt-grp-nat    .pt-group-label { color: #dc2626; border-right-color: #ef4444; background: rgba(239,68,68,0.08); }
-.pt-grp-intl   .pt-group-label { color: #4338ca; border-right-color: #6366f1; background: rgba(99,102,241,0.08); }
+.pt-grp-ih-co  .pt-group-label { color: #0e7490; border-right-color: #0891b2; background: rgba(8,145,178,0.08); border-bottom-color: #bae6fd; }
+.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; border-right-color: #8b5cf6; background: rgba(139,92,246,0.08); border-bottom-color: #ddd6fe; }
+.pt-grp-icc    .pt-group-label { color: #b45309; border-right-color: #f59e0b; background: rgba(245,158,11,0.08); border-bottom-color: #fde68a; }
+.pt-grp-nat    .pt-group-label { color: #dc2626; border-right-color: #ef4444; background: rgba(239,68,68,0.08);  border-bottom-color: #fecaca; }
+.pt-grp-intl   .pt-group-label { color: #4338ca; border-right-color: #6366f1; background: rgba(99,102,241,0.08); border-bottom-color: #c7d2fe; }
 
 /* Right cell: items fill ALL remaining width */
 .pt-group-items {
-  flex: 1;
-  min-width: 0;
+  display: table-cell;
+  width: 100%;
+  padding: 3pt 6pt;
+  vertical-align: middle;
+  border-bottom: 0.5pt solid #d1fae5;
+}
+/* Inner flex container so chips wrap properly */
+.pt-group-items-inner {
   display: flex;
   flex-wrap: wrap;
+  gap: 2pt 6pt;
   align-items: center;
-  gap: 2pt 8pt;
-  padding: 3pt 6pt;
 }
 
 /* ── Single achievement chip ─────────────────────────────── */

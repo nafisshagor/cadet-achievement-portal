@@ -350,22 +350,13 @@ export async function printProfile() {
   })
 
   // ── Separate competition achievements ────────────────────────────────────
-  const extraCurricular = allAch.filter(a =>
-    a.category !== 'Academics' && extractActivityType(a) === 'Extra-Curricular'
-  )
-  const coCurricular = allAch.filter(a =>
-    a.category !== 'Academics' && extractActivityType(a) === 'Co-Curricular'
-  )
-  const otherAch = allAch.filter(a =>
-    a.category !== 'Academics' &&
-    extractActivityType(a) !== 'Extra-Curricular' &&
-    extractActivityType(a) !== 'Co-Curricular'
-  )
+  // Pass all non-academic achievements — grouping is done inside buildPrintHTML
+  const competitionAch = allAch.filter(a => a.category !== 'Academics')
 
   // ── Build the print frame ─────────────────────────────────────────────────
   const frame = document.createElement('div')
   frame.id = 'ccams-print-frame'
-  frame.innerHTML = buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, otherAch)
+  frame.innerHTML = buildPrintHTML(cadet, academicMap, competitionAch)
   document.body.appendChild(frame)
 
   // Force light theme
@@ -481,7 +472,7 @@ function formatAchForPrint(item) {
 
 // ─── Build complete print HTML ────────────────────────────────────────────────
 
-function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, otherAch) {
+function buildPrintHTML(cadet, academicMap, competitionAch) {
   const getOrd = n => {
     const num = parseInt(n); if (isNaN(num)) return n || ''
     const s = ['th','st','nd','rd'], v = num % 100
@@ -596,8 +587,9 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
     ).join('')
 
   // ── Competition achievements ─────────────────────────────────────────────
-  // Split Inter-house into Co-Curricular and Extra-Curricular sub-sections.
-  // All other categories (Inter-college, National, International) are grouped separately.
+  // Group all non-academic achievements into display sections.
+  // Inter-house items are split by activityType (Co-Curricular / Extra-Curricular).
+  // Items with no activityType in META (National, ICC, International) are grouped by category.
 
   function getAchMeta(item) {
     const desc = item.description || ''
@@ -616,9 +608,7 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
   function renderSingleAch(item) {
     const f    = formatAchForPrint(item)
     const meta = getAchMeta(item)
-    // Clean up shortTitle: strip year suffix for brevity
     let title = f.shortTitle
-    // Remove trailing " YYYY" if present
     title = title.replace(/\s+\d{4}$/, '').trim()
     const level   = item.level || ''
     const honours = meta.honours
@@ -637,22 +627,22 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
     if (!items.length) return ''
     return `<div class="pt-group ${accentClass || ''}">
       <div class="pt-group-label">${escapeHTML(label)}</div>
-      <div class="pt-group-items">${items.map(renderSingleAch).join('')}</div>
+      <div class="pt-group-items"><div class="pt-group-items-inner">${items.map(renderSingleAch).join('')}</div></div>
     </div>`
   }
 
-  // Split Inter-house by activityType
-  const ihCo    = coCurricular.filter(a => a.category === 'Inter-house')
-  const ihExtra = extraCurricular.filter(a => a.category === 'Inter-house')
-
-  // Non-inter-house competition items
-  const interCollege  = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'Inter-college')
-  const national      = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'National')
-  const international = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'International')
+  // Bucket each item
+  const ihCo         = competitionAch.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Co-Curricular')
+  const ihExtra      = competitionAch.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Extra-Curricular')
+  const ihNoType     = competitionAch.filter(a => a.category === 'Inter-house'   && !getAchMeta(a).activityType)
+  const interCollege = competitionAch.filter(a => a.category === 'Inter-college')
+  const national     = competitionAch.filter(a => a.category === 'National')
+  const international= competitionAch.filter(a => a.category === 'International')
 
   const achievementsHTML = [
     renderGroup('Inter House — Co-Curricular',    ihCo,          'pt-grp-ih-co'),
     renderGroup('Inter House — Extra-Curricular', ihExtra,       'pt-grp-ih-ex'),
+    renderGroup('Inter House',                    ihNoType,      'pt-grp-ih-co'),
     renderGroup('Inter Cadet College',            interCollege,  'pt-grp-icc'),
     renderGroup('National',                       national,      'pt-grp-nat'),
     renderGroup('International',                  international, 'pt-grp-intl'),
@@ -731,6 +721,7 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
     <!-- ══ FOOTER ════════════════════════════════════════════ -->
     <div class="pt-footer">
       <div>Form Master's Signature: ___________________________</div>
+      <div>Vice Principal's Signature: ___________________________</div>
       <div>Principal's Signature: ___________________________</div>
       <div>Date: _______________</div>
     </div>
