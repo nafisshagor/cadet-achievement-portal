@@ -4490,66 +4490,85 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* ── Achievement container — full width ──────────────────── */
 .pt-ach-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2pt;
+  width: 100%;
+  border: 0.5pt solid #cbd5e1;
+  border-radius: 3pt;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
-/* ── Achievement group (one category) ───────────────────── */
+/* ── Achievement group — one row in the table ────────────── */
 .pt-group {
   display: flex;
-  align-items: flex-start;
-  gap: 0;
-  border-left: 2.5pt solid #10b981;
-  padding-left: 5pt;
-  margin-bottom: 2pt;
+  align-items: stretch;
+  width: 100%;
+  border-bottom: 0.5pt solid #e2e8f0;
 }
-.pt-grp-ih-co  { border-left-color: #0891b2; }
-.pt-grp-ih-ex  { border-left-color: #8b5cf6; }
-.pt-grp-icc    { border-left-color: #f59e0b; }
-.pt-grp-nat    { border-left-color: #ef4444; }
-.pt-grp-intl   { border-left-color: #6366f1; }
+.pt-group:last-child { border-bottom: none; }
 
+.pt-grp-ih-co  { background: #f0f9ff; }
+.pt-grp-ih-ex  { background: #faf5ff; }
+.pt-grp-icc    { background: #fffbeb; }
+.pt-grp-nat    { background: #fef2f2; }
+.pt-grp-intl   { background: #eef2ff; }
+
+/* Left cell: coloured label */
 .pt-group-label {
-  font-size: 6.5pt;
+  font-size: 6pt;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: #047857;
   white-space: nowrap;
-  min-width: 105pt;
-  padding-top: 1pt;
+  width: 88pt;
+  min-width: 88pt;
+  max-width: 88pt;
   flex-shrink: 0;
+  padding: 3pt 5pt;
+  border-right: 2pt solid #10b981;
+  display: flex;
+  align-items: center;
+  background: rgba(16,185,129,0.08);
 }
-.pt-grp-ih-co  .pt-group-label { color: #0e7490; }
-.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; }
-.pt-grp-icc    .pt-group-label { color: #b45309; }
-.pt-grp-nat    .pt-group-label { color: #dc2626; }
-.pt-grp-intl   .pt-group-label { color: #4338ca; }
+.pt-grp-ih-co  .pt-group-label { color: #0e7490; border-right-color: #0891b2; background: rgba(8,145,178,0.08); }
+.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; border-right-color: #8b5cf6; background: rgba(139,92,246,0.08); }
+.pt-grp-icc    .pt-group-label { color: #b45309; border-right-color: #f59e0b; background: rgba(245,158,11,0.08); }
+.pt-grp-nat    .pt-group-label { color: #dc2626; border-right-color: #ef4444; background: rgba(239,68,68,0.08); }
+.pt-grp-intl   .pt-group-label { color: #4338ca; border-right-color: #6366f1; background: rgba(99,102,241,0.08); }
 
+/* Right cell: items fill ALL remaining width */
 .pt-group-items {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5pt 10pt;
+  align-items: center;
+  gap: 2pt 8pt;
+  padding: 3pt 6pt;
 }
 
-/* ── Single achievement row ──────────────────────────────── */
+/* ── Single achievement chip ─────────────────────────────── */
 .pt-ach-row {
-  display: flex;
-  align-items: baseline;
+  display: inline-flex;
+  align-items: center;
   gap: 3pt;
-  min-width: 100pt;
-  max-width: 220pt;
+  background: rgba(255,255,255,0.7);
+  border: 0.5pt solid rgba(0,0,0,0.08);
+  border-radius: 3pt;
+  padding: 1.5pt 5pt;
 }
+.pt-grp-ih-co  .pt-ach-row { border-color: rgba(8,145,178,0.2);  background: rgba(8,145,178,0.06);  }
+.pt-grp-ih-ex  .pt-ach-row { border-color: rgba(139,92,246,0.2); background: rgba(139,92,246,0.06); }
+.pt-grp-icc    .pt-ach-row { border-color: rgba(245,158,11,0.2); background: rgba(245,158,11,0.06); }
+.pt-grp-nat    .pt-ach-row { border-color: rgba(239,68,68,0.2);  background: rgba(239,68,68,0.06);  }
+.pt-grp-intl   .pt-ach-row { border-color: rgba(99,102,241,0.2); background: rgba(99,102,241,0.06); }
+
 .pt-ach-dot {
-  width: 4pt;
-  height: 4pt;
+  width: 3.5pt;
+  height: 3.5pt;
   border-radius: 50%;
   background: #10b981;
   flex-shrink: 0;
-  margin-top: 3pt;
 }
 .pt-grp-ih-co  .pt-ach-dot { background: #0891b2; }
 .pt-grp-ih-ex  .pt-ach-dot { background: #8b5cf6; }
@@ -4563,16 +4582,18 @@ body.login-mode { overflow: hidden; height: 100vh; }
   gap: 0.5pt;
 }
 .pt-ach-name {
-  font-size: 7pt;
+  font-size: 6.8pt;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.25;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 .pt-ach-tags {
-  font-size: 6pt;
-  color: #047857;
+  font-size: 5.8pt;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.1;
+  color: #047857;
+  white-space: nowrap;
 }
 .pt-grp-ih-co  .pt-ach-tags { color: #0e7490; }
 .pt-grp-ih-ex  .pt-ach-tags { color: #7c3aed; }
@@ -4583,7 +4604,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-empty {
   color: #94a3b8;
   font-style: italic;
-  font-size: 7pt;
+  font-size: 6.5pt;
+  padding: 3pt;
 }
 
 /* ── Discipline table ────────────────────────────────────── */
