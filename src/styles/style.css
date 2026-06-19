@@ -4492,17 +4492,37 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* ── Achievement container — full width ──────────────────── */
 .pt-ach-container {
-  display: table;
+  display: block;
   width: 100%;
-  border-collapse: collapse;
   border: 0.75pt solid #a7f3d0;
   border-radius: 3pt;
   overflow: hidden;
   flex-shrink: 0;
-  table-layout: fixed;
 }
 
-/* ── Achievement group — one row in the table ────────────── */
+/* ── Year+Class group block ──────────────────────────────── */
+.pt-year-group {
+  border-bottom: 1pt solid #a7f3d0;
+}
+.pt-year-group:last-child { border-bottom: none; }
+
+.pt-year-label {
+  background: linear-gradient(90deg, #064e3b 0%, #047857 100%);
+  color: #fff;
+  font-size: 6.5pt;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2.5pt 7pt;
+}
+
+.pt-year-rows {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* ── Achievement group — one category row ────────────────── */
 .pt-group {
   display: table-row;
   width: 100%;

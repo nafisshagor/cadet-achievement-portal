@@ -594,22 +594,29 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
   function getAchMeta(item) {
     const desc = item.description || ''
     const metaLine = desc.split('\n').find(l => l.startsWith('META|')) || ''
-    let activityType = '', honours = '', extra = ''
+    let activityType = '', honours = '', extra = '', className = ''
     metaLine.substring(5).split('|').forEach(pair => {
       const [key, ...v] = pair.split('=')
       const val = v.join('=')
       if (key === 'activityType') activityType = val
       if (key === 'honours')      honours      = val
       if (key === 'extra')        extra        = val
+      if (key === 'class')        className    = val
     })
-    return { activityType, honours, extra }
+    // Year from achievement_date
+    let year = ''
+    if (item.achievement_date) {
+      const m = String(item.achievement_date).match(/^(\d{4})/)
+      if (m) year = m[1]
+    }
+    return { activityType, honours, extra, className, year }
   }
 
   function renderSingleAch(item) {
     const f    = formatAchForPrint(item)
     const meta = getAchMeta(item)
-    let title = f.shortTitle
-    title = title.replace(/\s+\d{4}$/, '').trim()
+    // Strip year from end of title (already shown in year-group header)
+    let title = f.shortTitle.replace(/\s+\d{4}$/, '').trim()
     const level   = item.level || ''
     const honours = meta.honours
     const extra   = meta.extra
@@ -623,30 +630,64 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
     </div>`
   }
 
-  function renderGroup(label, items, accentClass) {
+  // ── Group by year+class, then by category sub-section ─────────────────────
+  // Build a map: "YYYY|CLASS" → { year, className, items[] }
+  const yearClassMap = {}
+  competitionAch.forEach(item => {
+    const meta = getAchMeta(item)
+    const key  = `${meta.year || '—'}|${meta.className || '—'}`
+    if (!yearClassMap[key]) {
+      yearClassMap[key] = { year: meta.year || '—', className: meta.className || '', items: [] }
+    }
+    yearClassMap[key].items.push(item)
+  })
+
+  // Sort by year descending
+  const sortedKeys = Object.keys(yearClassMap).sort((a, b) => {
+    const ya = parseInt(a.split('|')[0]) || 0
+    const yb = parseInt(b.split('|')[0]) || 0
+    return yb - ya
+  })
+
+  function renderCategoryRows(items) {
+    const ihCo_g         = items.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Co-Curricular')
+    const ihExtra_g      = items.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Extra-Curricular')
+    const ihNoType_g     = items.filter(a => a.category === 'Inter-house'   && !getAchMeta(a).activityType)
+    const interCollege_g = items.filter(a => a.category === 'Inter-college')
+    const national_g     = items.filter(a => a.category === 'National')
+    const international_g= items.filter(a => a.category === 'International')
+
+    return [
+      renderCatRow('IH Co-Curricular',    ihCo_g,          'pt-grp-ih-co'),
+      renderCatRow('IH Extra-Curricular', ihExtra_g,       'pt-grp-ih-ex'),
+      renderCatRow('Inter House',         ihNoType_g,      'pt-grp-ih-co'),
+      renderCatRow('Inter Cadet College', interCollege_g,  'pt-grp-icc'),
+      renderCatRow('National',            national_g,      'pt-grp-nat'),
+      renderCatRow('International',       international_g, 'pt-grp-intl'),
+    ].filter(Boolean).join('')
+  }
+
+  function renderCatRow(label, items, accentClass) {
     if (!items.length) return ''
-    return `<div class="pt-group ${accentClass || ''}">
+    return `<div class="pt-group ${accentClass}">
       <div class="pt-group-label">${escapeHTML(label)}</div>
       <div class="pt-group-items"><div class="pt-group-items-inner">${items.map(renderSingleAch).join('')}</div></div>
     </div>`
   }
 
-  // Bucket each item
-  const ihCo         = competitionAch.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Co-Curricular')
-  const ihExtra      = competitionAch.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Extra-Curricular')
-  const ihNoType     = competitionAch.filter(a => a.category === 'Inter-house'   && !getAchMeta(a).activityType)
-  const interCollege = competitionAch.filter(a => a.category === 'Inter-college')
-  const national     = competitionAch.filter(a => a.category === 'National')
-  const international= competitionAch.filter(a => a.category === 'International')
-
-  const achievementsHTML = [
-    renderGroup('Inter House — Co-Curricular',    ihCo,          'pt-grp-ih-co'),
-    renderGroup('Inter House — Extra-Curricular', ihExtra,       'pt-grp-ih-ex'),
-    renderGroup('Inter House',                    ihNoType,      'pt-grp-ih-co'),
-    renderGroup('Inter Cadet College',            interCollege,  'pt-grp-icc'),
-    renderGroup('National',                       national,      'pt-grp-nat'),
-    renderGroup('International',                  international, 'pt-grp-intl'),
-  ].filter(Boolean).join('') || `<span class="pt-empty">No achievement records found.</span>`
+  // Build year-grouped achievement HTML
+  const achievementsHTML = sortedKeys.length
+    ? sortedKeys.map(key => {
+        const grp   = yearClassMap[key]
+        const label = grp.className
+          ? `${grp.year} — Class ${grp.className}`
+          : grp.year
+        return `<div class="pt-year-group">
+          <div class="pt-year-label">${escapeHTML(label)}</div>
+          <div class="pt-year-rows">${renderCategoryRows(grp.items)}</div>
+        </div>`
+      }).join('')
+    : `<span class="pt-empty">No achievement records found.</span>`
 
   // ── Photo ─────────────────────────────────────────────────────────────────
   const photoSrc = cadet.photo_url || ''
