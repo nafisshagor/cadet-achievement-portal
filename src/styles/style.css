@@ -4292,16 +4292,20 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
   @page {
     size: A4 landscape;
-    margin: 1cm 1.2cm;
+    margin: 0.8cm 1cm;
   }
 
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
+    /* Suppress browser-added header/footer text */
+    -webkit-print-color-adjust: exact !important;
   }
 
-  body > *:not(#ccams-print-frame) { display: none !important; }
+  /* Hide everything except the print frame */
+  body > * { display: none !important; }
+  body > #ccams-print-frame { display: block !important; }
 
   #ccams-print-frame {
     display: block !important;
@@ -4434,6 +4438,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
   margin-bottom: 3pt;
   flex-shrink: 0;
 }
+.pt-section-title-red {
+  color: #b91c1c;
+  border-bottom-color: #b91c1c;
+}
 
 /* ── Academic table ──────────────────────────────────────── */
 .pt-acad-wrap { flex-shrink: 0; }
@@ -4563,7 +4571,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-grp-ih-co  .pt-group-label { color: #0e7490; border-right-color: #0891b2; background: rgba(8,145,178,0.08); border-bottom-color: #bae6fd; }
 .pt-grp-ih-ex  .pt-group-label { color: #7c3aed; border-right-color: #8b5cf6; background: rgba(139,92,246,0.08); border-bottom-color: #ddd6fe; }
 .pt-grp-icc    .pt-group-label { color: #b45309; border-right-color: #f59e0b; background: rgba(245,158,11,0.08); border-bottom-color: #fde68a; }
-.pt-grp-nat    .pt-group-label { color: #dc2626; border-right-color: #ef4444; background: rgba(239,68,68,0.08);  border-bottom-color: #fecaca; }
+.pt-grp-nat    .pt-group-label { color: #1d4ed8; border-right-color: #3b82f6; background: rgba(59,130,246,0.08);  border-bottom-color: #bfdbfe; }
 .pt-grp-intl   .pt-group-label { color: #4338ca; border-right-color: #6366f1; background: rgba(99,102,241,0.08); border-bottom-color: #c7d2fe; }
 
 /* Right cell: items fill ALL remaining width */
@@ -4595,7 +4603,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-grp-ih-co  .pt-ach-row { border-color: rgba(8,145,178,0.2);  background: rgba(8,145,178,0.06);  }
 .pt-grp-ih-ex  .pt-ach-row { border-color: rgba(139,92,246,0.2); background: rgba(139,92,246,0.06); }
 .pt-grp-icc    .pt-ach-row { border-color: rgba(245,158,11,0.2); background: rgba(245,158,11,0.06); }
-.pt-grp-nat    .pt-ach-row { border-color: rgba(239,68,68,0.2);  background: rgba(239,68,68,0.06);  }
+.pt-grp-nat    .pt-ach-row { border-color: rgba(59,130,246,0.2);  background: rgba(59,130,246,0.06);  }
 .pt-grp-intl   .pt-ach-row { border-color: rgba(99,102,241,0.2); background: rgba(99,102,241,0.06); }
 
 .pt-ach-dot {
@@ -4608,7 +4616,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-grp-ih-co  .pt-ach-dot { background: #0891b2; }
 .pt-grp-ih-ex  .pt-ach-dot { background: #8b5cf6; }
 .pt-grp-icc    .pt-ach-dot { background: #f59e0b; }
-.pt-grp-nat    .pt-ach-dot { background: #ef4444; }
+.pt-grp-nat    .pt-ach-dot { background: #3b82f6; }
 .pt-grp-intl   .pt-ach-dot { background: #6366f1; }
 
 .pt-ach-body {
@@ -4633,7 +4641,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-grp-ih-co  .pt-ach-tags { color: #0e7490; }
 .pt-grp-ih-ex  .pt-ach-tags { color: #7c3aed; }
 .pt-grp-icc    .pt-ach-tags { color: #b45309; }
-.pt-grp-nat    .pt-ach-tags { color: #dc2626; }
+.pt-grp-nat    .pt-ach-tags { color: #1d4ed8; }
 .pt-grp-intl   .pt-ach-tags { color: #4338ca; }
 
 .pt-empty {
@@ -4653,15 +4661,16 @@ body.login-mode { overflow: hidden; height: 100vh; }
 }
 .pt-disc-table th,
 .pt-disc-table td {
-  border: 0.5pt solid #cbd5e1;
+  border: 0.5pt solid #fecaca;
   padding: 2.5pt 4pt;
   text-align: center;
   vertical-align: middle;
 }
 .pt-disc-table th {
-  background: #ecfdf5;
+  background: #fef2f2;
   font-weight: 700;
-  color: #065f46;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 .pt-disc-label-head {
   text-align: left !important;
@@ -4671,8 +4680,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-disc-table td:first-child {
   text-align: left;
   font-weight: 600;
-  color: #374151;
-  background: #f8fafc;
+  color: #7f1d1d;
+  background: #fff5f5;
   padding-left: 5pt;
   white-space: nowrap;
 }

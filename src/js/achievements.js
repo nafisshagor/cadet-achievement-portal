@@ -120,10 +120,16 @@ function getSport(name) {
 
 function getIHCompetitions(activityType) {
   if (activityType === 'Co-Curricular') {
-    return IH_CO_CURRICULAR.map(c => ({ value: c, label: c }))
+    return [
+      ...IH_CO_CURRICULAR.map(c => ({ value: c, label: c })),
+      { value: '__other__', label: '— Other —' }
+    ]
   }
-  // Extra-Curricular: return sport names only
-  return IH_SPORTS.map(s => ({ value: s.name, label: s.name }))
+  // Extra-Curricular: return sport names + Other
+  return [
+    ...IH_SPORTS.map(s => ({ value: s.name, label: s.name })),
+    { value: '__other__', label: '— Other —' }
+  ]
 }
 
 // ─── Competition title format ─────────────────────────────────────────────────
@@ -287,6 +293,13 @@ function setupModalListeners() {
     ihGroup.dataset.achListenerBound = 'true'
   }
 
+  // Inter House: other name → preview update
+  const ihOtherName = document.getElementById('ihOtherName')
+  if (ihOtherName && !ihOtherName.dataset.achListenerBound) {
+    ihOtherName.addEventListener('input', updatePreview)
+    ihOtherName.dataset.achListenerBound = 'true'
+  }
+
   // Preview updates for competition mode
   ;['achievementTitle', 'achievementCategory', 'achievementYear'].forEach(id => {
     const el = document.getElementById(id)
@@ -360,6 +373,14 @@ function onIHCompetitionChange() {
 
   if (!compValue) { updatePreview(); return }
 
+  // ── "Other" selected — free text name + Position + Description only ──────
+  if (compValue === '__other__') {
+    document.getElementById('ihOtherNameWrap')?.classList.remove('hidden')
+    showIHCompetitionFields(true)
+    updatePreview()
+    return
+  }
+
   if (activityType === 'Extra-Curricular') {
     const sport = getSport(compValue)
     if (!sport) { updatePreview(); return }
@@ -374,8 +395,6 @@ function onIHCompetitionChange() {
         groupWrap.classList.remove('hidden')
       }
     } else {
-      // Regular sport (Football, Cricket, Swimming, etc.)
-      // Show event dropdown if it has events
       if (sport.events?.length) {
         const subWrap   = document.getElementById('ihSubEventWrap')
         const subSelect = document.getElementById('ihSubEvent')
@@ -385,11 +404,12 @@ function onIHCompetitionChange() {
           subWrap.classList.remove('hidden')
         }
       }
-      // Show honour checkboxes
       renderHonourCheckboxes(sport)
-      // Show standard competition fields (position etc.) — always visible for regular sports
       showIHCompetitionFields(true)
     }
+  } else {
+    // Co-Curricular (non-Other) — just position + description
+    showIHCompetitionFields(true)
   }
 
   updatePreview()
@@ -495,6 +515,10 @@ function resetIHBelow(level) {
     const grpSel = document.getElementById('ihAthlGroup')
     if (grpSel) grpSel.value = ''
     document.getElementById('ihAthlGroupWrap')?.classList.add('hidden')
+    // other name
+    const otherName = document.getElementById('ihOtherName')
+    if (otherName) otherName.value = ''
+    document.getElementById('ihOtherNameWrap')?.classList.add('hidden')
     // reset honours
     const honourWrap = document.getElementById('ihHonourWrap')
     if (honourWrap) {
@@ -534,18 +558,21 @@ function getIHCompetitionName() {
   const group   = document.getElementById('ihAthlGroup')?.value    || ''
   const subEvt  = document.getElementById('ihSubEvent')?.value     || ''
 
+  // "Other" — use the free-text name input
+  if (comp === '__other__') {
+    return document.getElementById('ihOtherName')?.value.trim() || ''
+  }
+
   if (!comp) return ''
 
   const sport = getSport(comp)
   if (sport?.groups) {
-    // Athletics
     if (!group) return comp
     if (group === 'Best Athlete') return `${comp} - Best Athlete`
     if (subEvt) return `${comp} - ${group} - ${subEvt}`
     return `${comp} - ${group}`
   }
 
-  // Regular sport
   if (subEvt) return `${comp} - ${subEvt}`
   return comp
 }
@@ -658,13 +685,16 @@ function resetCompetitionFields() {
   const ihComp     = document.getElementById('ihCompetition')
   const ihGroup    = document.getElementById('ihAthlGroup')
   const ihSub      = document.getElementById('ihSubEvent')
+  const ihOther    = document.getElementById('ihOtherName')
   if (ihActivity) ihActivity.value = ''
   if (ihComp)     ihComp.innerHTML  = '<option value="">— Select Competition —</option>'
   if (ihGroup)    ihGroup.innerHTML = '<option value="">— Select Category —</option>'
   if (ihSub)      ihSub.innerHTML   = '<option value="">— Select Event —</option>'
+  if (ihOther)    ihOther.value     = ''
   document.getElementById('ihCompetitionWrap')?.classList.add('hidden')
   document.getElementById('ihAthlGroupWrap')?.classList.add('hidden')
   document.getElementById('ihSubEventWrap')?.classList.add('hidden')
+  document.getElementById('ihOtherNameWrap')?.classList.add('hidden')
   const honourWrap = document.getElementById('ihHonourWrap')
   if (honourWrap) {
     honourWrap.classList.add('hidden')
@@ -765,9 +795,17 @@ async function saveCompetitionFromForm() {
   if (category === 'Inter-house') {
     activityType    = document.getElementById('ihActivityType')?.value || ''
     competitionName = getIHCompetitionName()
-    event           = ''  // sub-event is baked into competitionName already
+    event           = ''
     if (!activityType)    { showToast('Please select an activity type.', 'warning'); return }
-    if (!competitionName) { showToast('Please select a competition.', 'warning'); return }
+    if (!competitionName) {
+      const compVal = document.getElementById('ihCompetition')?.value
+      if (compVal === '__other__') {
+        showToast('Please enter a competition name.', 'warning')
+      } else {
+        showToast('Please select a competition.', 'warning')
+      }
+      return
+    }
 
     // For Best Athlete / Best Player / Best Goalkeeper / Best Swimmer honours,
     // the position field is optional — use the checked honours as the level
@@ -1099,14 +1137,14 @@ export async function openEditAchievementForm(achievement) {
           const parts    = parsed.competitionName.split(' - ')
           const sportName = parts[0].trim()
 
-          // Select the sport
-          if (Array.from(ihComp.options).find(o => o.value === sportName)) {
+          // Select the sport — or fall back to "Other" if not found
+          const knownOption = Array.from(ihComp.options).find(o => o.value === sportName)
+          if (knownOption) {
             ihComp.value = sportName
             onIHCompetitionChange()
 
             const sport = getSport(sportName)
             if (sport?.groups && parts.length >= 2) {
-              // Athletics: parts[1] = group, parts[2] = event
               const groupVal = parts[1].trim()
               if (ihGroup && Array.from(ihGroup.options).find(o => o.value === groupVal)) {
                 ihGroup.value = groupVal
@@ -1116,11 +1154,14 @@ export async function openEditAchievementForm(achievement) {
                 }
               }
             } else if (parts.length >= 2 && ihSub) {
-              // Regular sport with sub-event
               ihSub.value = parts[1].trim()
             }
           } else {
-            ihComp.value = sportName
+            // Unknown name → select "Other" and fill the free-text field
+            ihComp.value = '__other__'
+            onIHCompetitionChange()
+            const otherInput = document.getElementById('ihOtherName')
+            if (otherInput) otherInput.value = parsed.competitionName
           }
 
           // Restore honour checkboxes

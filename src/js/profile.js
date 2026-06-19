@@ -743,7 +743,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
     <div class="pt-ach-container">${achievementsHTML}</div>
 
     <!-- ══ DISCIPLINE RECORD ════════════════════════════════ -->
-    <div class="pt-section-title" style="margin-top:5pt;">Discipline Record</div>
+    <div class="pt-section-title pt-section-title-red" style="margin-top:5pt;">Discipline Record</div>
     <table class="pt-disc-table">
       <thead>
         <tr>
@@ -752,10 +752,10 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
         </tr>
       </thead>
       <tbody>
-        <tr><td>Conduct Grade</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td>Extra Drills</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td>Confinements</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Restrictions</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Parents Call</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Warnings</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       </tbody>
     </table>
 
