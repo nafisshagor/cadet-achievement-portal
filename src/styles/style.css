@@ -4277,11 +4277,11 @@ body.login-mode { overflow: hidden; height: 100vh; }
     border-color: #fde68a !important;
   }
 }
+
 /* ============================================================
    PRINT STYLES — landscape one-page cadet achievement record
 ============================================================ */
 
-/* ── Hide everything on screen except the print frame ── */
 #ccams-print-frame { display: none; }
 
 @media print {
@@ -4292,26 +4292,22 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
   @page {
     size: A4 landscape;
-    margin: 0.6cm 0.7cm;
+    margin: 0.55cm 0.65cm;
   }
 
-  /* Hide the entire app UI */
   body > *:not(#ccams-print-frame) { display: none !important; }
 
-  /* Show only the print frame */
   #ccams-print-frame {
     display: block !important;
     position: fixed;
     top: 0; left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
   }
 
-  /* Suppress any no-print helpers inside the frame */
   .no-print { display: none !important; }
 }
 
-/* ── Print page layout ───────────────────────────────────── */
+/* ── Page shell ──────────────────────────────────────────── */
 .pt-page {
   width: 100%;
   height: 100%;
@@ -4320,7 +4316,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
   color: #1e293b;
   display: flex;
   flex-direction: column;
-  gap: 5pt;
+  gap: 4pt;
   box-sizing: border-box;
 }
 
@@ -4328,53 +4324,52 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-header {
   display: flex;
   align-items: stretch;
-  gap: 0;
   border: 1.5pt solid #064e3b;
   border-radius: 5pt;
   overflow: hidden;
-  background: #fff;
+  flex-shrink: 0;
 }
 .pt-header-left {
   background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
   color: #fff;
-  padding: 7pt 10pt;
-  min-width: 130pt;
+  padding: 6pt 10pt;
+  min-width: 120pt;
+  max-width: 140pt;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 2pt;
+  flex-shrink: 0;
 }
 .pt-college {
-  font-size: 7pt;
+  font-size: 6pt;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.85;
-  margin-bottom: 2pt;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
 }
 .pt-title {
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 900;
   line-height: 1.2;
-  letter-spacing: -0.01em;
 }
 .pt-subtitle {
-  font-size: 5.5pt;
-  opacity: 0.75;
-  margin-top: 2pt;
+  font-size: 5pt;
+  opacity: 0.7;
+  margin-top: 1pt;
 }
 .pt-header-center {
   flex: 1;
-  padding: 7pt 12pt;
+  padding: 6pt 10pt;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4pt;
+  gap: 3pt;
   border-left: 1pt solid #e2e8f0;
   border-right: 1pt solid #e2e8f0;
 }
 .pt-cadet-name {
-  font-size: 14pt;
+  font-size: 13pt;
   font-weight: 900;
   letter-spacing: -0.02em;
   color: #0f172a;
@@ -4383,36 +4378,36 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-cadet-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8pt;
+  gap: 6pt 12pt;
   font-size: 7pt;
   color: #475569;
 }
 .pt-cadet-meta span { white-space: nowrap; }
-.pt-cadet-meta strong { color: #0f172a; }
-
+.pt-cadet-meta strong { color: #0f172a; font-weight: 700; }
 .pt-header-right {
-  width: 68pt;
-  min-width: 68pt;
+  width: 60pt;
+  min-width: 60pt;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5pt;
+  padding: 4pt;
   background: #f8fafc;
+  flex-shrink: 0;
 }
 .pt-photo {
-  width: 58pt;
-  height: 72pt;
+  width: 52pt;
+  height: 64pt;
   object-fit: cover;
   border-radius: 3pt;
   border: 1pt solid #cbd5e1;
 }
 .pt-photo-placeholder {
-  width: 58pt;
-  height: 72pt;
+  width: 52pt;
+  height: 64pt;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 6pt;
+  font-size: 5.5pt;
   color: #94a3b8;
   border: 1pt dashed #cbd5e1;
   border-radius: 3pt;
@@ -4421,36 +4416,35 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* ── Section title bar ───────────────────────────────────── */
 .pt-section-title {
-  font-size: 7pt;
+  font-size: 6.5pt;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: #047857;
   border-bottom: 1.5pt solid #047857;
-  padding-bottom: 2pt;
+  padding-bottom: 1.5pt;
   margin-bottom: 3pt;
+  flex-shrink: 0;
 }
 
 /* ── Academic table ──────────────────────────────────────── */
-.pt-acad-wrap {
-  overflow: hidden;
-}
+.pt-acad-wrap { flex-shrink: 0; }
 .pt-acad-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 7pt;
+  font-size: 6.8pt;
   table-layout: fixed;
 }
 .pt-acad-table th,
 .pt-acad-table td {
   border: 0.5pt solid #cbd5e1;
-  padding: 2pt 3pt;
+  padding: 2pt 2.5pt;
   text-align: center;
   vertical-align: middle;
   line-height: 1.3;
 }
 .pt-row-label-head {
-  width: 42pt;
+  width: 40pt;
   background: #f1f5f9;
   font-weight: 700;
   text-align: left;
@@ -4460,7 +4454,7 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-row-label {
   background: #f1f5f9;
   font-weight: 700;
-  text-align: left;
+  text-align: left !important;
   padding-left: 4pt !important;
   color: #475569;
   white-space: nowrap;
@@ -4469,100 +4463,123 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: #ecfdf5;
   font-weight: 800;
   color: #065f46;
-  font-size: 8pt;
+  font-size: 7.5pt;
   border-bottom: 1pt solid #6ee7b7;
 }
 .pt-acad-sub {
   background: #f0fdf4;
   font-weight: 600;
   color: #374151;
-  font-size: 6.5pt;
+  font-size: 6pt;
   white-space: nowrap;
 }
-.pt-acad-cell {
-  color: #374151;
-  min-width: 20pt;
-}
+.pt-acad-cell { color: #64748b; }
 .pt-acad-cell.pt-has-val {
   font-weight: 700;
   color: #0f172a;
   background: #f0fdf4;
 }
-.pt-pos-row td {
-  background: #fafafa;
-  color: #64748b;
-  font-size: 6.5pt;
-}
-.pt-pos-row .pt-has-val {
+.pt-pos-row td { background: #fafafa; }
+.pt-pos-row .pt-row-label { background: #f1f5f9; }
+.pt-pos-row .pt-acad-cell { color: #94a3b8; font-size: 6.5pt; }
+.pt-pos-row .pt-acad-cell.pt-has-val {
   color: #374151;
   font-weight: 600;
   background: #fff;
 }
-.pt-pos-row .pt-row-label {
-  background: #f1f5f9;
-  color: #475569;
-}
 
-/* ── Lower section (achievements + discipline) ───────────── */
-.pt-lower {
-  flex: 1;
-  display: flex;
-  gap: 8pt;
-  min-height: 0;
-  overflow: hidden;
-}
-.pt-lower-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* ── Achievement items ───────────────────────────────────── */
+/* ── Achievement container — full width ──────────────────── */
 .pt-ach-container {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3pt;
-  overflow: hidden;
+  gap: 2pt;
+  flex-shrink: 0;
 }
-.pt-ach-cat-block {
+
+/* ── Achievement group (one category) ───────────────────── */
+.pt-group {
   display: flex;
-  align-items: baseline;
-  gap: 4pt;
-  font-size: 7pt;
+  align-items: flex-start;
+  gap: 0;
+  border-left: 2.5pt solid #10b981;
+  padding-left: 5pt;
+  margin-bottom: 2pt;
 }
-.pt-ach-cat-label {
-  font-weight: 800;
-  color: #064e3b;
-  white-space: nowrap;
+.pt-grp-ih-co  { border-left-color: #0891b2; }
+.pt-grp-ih-ex  { border-left-color: #8b5cf6; }
+.pt-grp-icc    { border-left-color: #f59e0b; }
+.pt-grp-nat    { border-left-color: #ef4444; }
+.pt-grp-intl   { border-left-color: #6366f1; }
+
+.pt-group-label {
   font-size: 6.5pt;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  min-width: 72pt;
+  letter-spacing: 0.07em;
+  color: #047857;
+  white-space: nowrap;
+  min-width: 105pt;
+  padding-top: 1pt;
+  flex-shrink: 0;
 }
-.pt-ach-cat-items {
+.pt-grp-ih-co  .pt-group-label { color: #0e7490; }
+.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; }
+.pt-grp-icc    .pt-group-label { color: #b45309; }
+.pt-grp-nat    .pt-group-label { color: #dc2626; }
+.pt-grp-intl   .pt-group-label { color: #4338ca; }
+
+.pt-group-items {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 2pt 6pt;
-  flex: 1;
+  gap: 1.5pt 10pt;
 }
-.pt-ach-item {
+
+/* ── Single achievement row ──────────────────────────────── */
+.pt-ach-row {
   display: flex;
   align-items: baseline;
   gap: 3pt;
+  min-width: 100pt;
+  max-width: 220pt;
+}
+.pt-ach-dot {
+  width: 4pt;
+  height: 4pt;
+  border-radius: 50%;
+  background: #10b981;
+  flex-shrink: 0;
+  margin-top: 3pt;
+}
+.pt-grp-ih-co  .pt-ach-dot { background: #0891b2; }
+.pt-grp-ih-ex  .pt-ach-dot { background: #8b5cf6; }
+.pt-grp-icc    .pt-ach-dot { background: #f59e0b; }
+.pt-grp-nat    .pt-ach-dot { background: #ef4444; }
+.pt-grp-intl   .pt-ach-dot { background: #6366f1; }
+
+.pt-ach-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5pt;
+}
+.pt-ach-name {
   font-size: 7pt;
-}
-.pt-ach-title {
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
+  line-height: 1.25;
 }
-.pt-ach-level {
+.pt-ach-tags {
+  font-size: 6pt;
   color: #047857;
-  font-size: 6.5pt;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.2;
 }
+.pt-grp-ih-co  .pt-ach-tags { color: #0e7490; }
+.pt-grp-ih-ex  .pt-ach-tags { color: #7c3aed; }
+.pt-grp-icc    .pt-ach-tags { color: #b45309; }
+.pt-grp-nat    .pt-ach-tags { color: #dc2626; }
+.pt-grp-intl   .pt-ach-tags { color: #4338ca; }
+
 .pt-empty {
   color: #94a3b8;
   font-style: italic;
@@ -4575,11 +4592,12 @@ body.login-mode { overflow: hidden; height: 100vh; }
   border-collapse: collapse;
   font-size: 7pt;
   table-layout: fixed;
+  flex-shrink: 0;
 }
 .pt-disc-table th,
 .pt-disc-table td {
   border: 0.5pt solid #cbd5e1;
-  padding: 3pt 4pt;
+  padding: 2.5pt 4pt;
   text-align: center;
   vertical-align: middle;
 }
@@ -4587,20 +4605,21 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: #ecfdf5;
   font-weight: 700;
   color: #065f46;
-  font-size: 7.5pt;
+}
+.pt-disc-label-head {
+  text-align: left !important;
+  padding-left: 5pt !important;
+  width: 70pt;
 }
 .pt-disc-table td:first-child {
   text-align: left;
   font-weight: 600;
   color: #374151;
   background: #f8fafc;
-  white-space: nowrap;
   padding-left: 5pt;
+  white-space: nowrap;
 }
-.pt-disc-table td {
-  height: 14pt;
-  color: #475569;
-}
+.pt-disc-table td { height: 13pt; }
 
 /* ── Footer ──────────────────────────────────────────────── */
 .pt-footer {
@@ -4611,13 +4630,6 @@ body.login-mode { overflow: hidden; height: 100vh; }
   border-top: 0.5pt solid #cbd5e1;
   font-size: 6.5pt;
   color: #64748b;
-}
-
-/* Print icon badges — keep colours */
-.ach-honour-badge,
-.ach-extra-badge,
-.ih-activity-badge {
-  background: #fef3c7 !important;
-  color: #92400e !important;
-  border-color: #fde68a !important;
+  flex-shrink: 0;
+  margin-top: auto;
 }

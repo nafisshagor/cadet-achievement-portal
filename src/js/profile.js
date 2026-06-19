@@ -595,44 +595,68 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
       })
     ).join('')
 
-  // ── Competition achievements ──────────────────────────────────────────────
-  function renderAchList(items) {
-    if (!items.length) return '<span class="pt-empty">—</span>'
-    return items.map(item => {
-      const f = formatAchForPrint(item)
-      return `<div class="pt-ach-item">
-        <span class="pt-ach-title">${escapeHTML(f.shortTitle)}</span>
-        ${f.extras ? `<span class="pt-ach-level">${escapeHTML(f.extras)}</span>` : ''}
-      </div>`
-    }).join('')
+  // ── Competition achievements ─────────────────────────────────────────────
+  // Split Inter-house into Co-Curricular and Extra-Curricular sub-sections.
+  // All other categories (Inter-college, National, International) are grouped separately.
+
+  function getAchMeta(item) {
+    const desc = item.description || ''
+    const metaLine = desc.split('\n').find(l => l.startsWith('META|')) || ''
+    let activityType = '', honours = '', extra = ''
+    metaLine.substring(5).split('|').forEach(pair => {
+      const [key, ...v] = pair.split('=')
+      const val = v.join('=')
+      if (key === 'activityType') activityType = val
+      if (key === 'honours')      honours      = val
+      if (key === 'extra')        extra        = val
+    })
+    return { activityType, honours, extra }
   }
 
-  const allCompetition = [...extraCurricular, ...coCurricular, ...otherAch]
-
-  // Group competition items by category for display
-  const byCategory = {}
-  allCompetition.forEach(item => {
-    const cat = item.category || 'Other'
-    if (!byCategory[cat]) byCategory[cat] = []
-    byCategory[cat].push(item)
-  })
-
-  const catOrder = ['Inter-house', 'Inter-college', 'National', 'International']
-  const catLabels = {
-    'Inter-house': 'Inter House',
-    'Inter-college': 'Inter Cadet College',
-    'National': 'National',
-    'International': 'International'
-  }
-
-  const achievementsHTML = catOrder
-    .filter(cat => byCategory[cat]?.length)
-    .map(cat => `
-      <div class="pt-ach-cat-block">
-        <div class="pt-ach-cat-label">${catLabels[cat] || cat}</div>
-        <div class="pt-ach-cat-items">${renderAchList(byCategory[cat])}</div>
+  function renderSingleAch(item) {
+    const f    = formatAchForPrint(item)
+    const meta = getAchMeta(item)
+    // Clean up shortTitle: strip year suffix for brevity
+    let title = f.shortTitle
+    // Remove trailing " YYYY" if present
+    title = title.replace(/\s+\d{4}$/, '').trim()
+    const level   = item.level || ''
+    const honours = meta.honours
+    const extra   = meta.extra
+    const tags    = [level, honours, extra].filter(Boolean).join(' · ')
+    return `<div class="pt-ach-row">
+      <span class="pt-ach-dot"></span>
+      <div class="pt-ach-body">
+        <span class="pt-ach-name">${escapeHTML(title)}</span>
+        ${tags ? `<span class="pt-ach-tags">${escapeHTML(tags)}</span>` : ''}
       </div>
-    `).join('') || '<span class="pt-empty">No competition records found.</span>'
+    </div>`
+  }
+
+  function renderGroup(label, items, accentClass) {
+    if (!items.length) return ''
+    return `<div class="pt-group ${accentClass || ''}">
+      <div class="pt-group-label">${escapeHTML(label)}</div>
+      <div class="pt-group-items">${items.map(renderSingleAch).join('')}</div>
+    </div>`
+  }
+
+  // Split Inter-house by activityType
+  const ihCo    = coCurricular.filter(a => a.category === 'Inter-house')
+  const ihExtra = extraCurricular.filter(a => a.category === 'Inter-house')
+
+  // Non-inter-house competition items
+  const interCollege  = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'Inter-college')
+  const national      = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'National')
+  const international = [...coCurricular, ...extraCurricular, ...otherAch].filter(a => a.category === 'International')
+
+  const achievementsHTML = [
+    renderGroup('Inter House — Co-Curricular',    ihCo,          'pt-grp-ih-co'),
+    renderGroup('Inter House — Extra-Curricular', ihExtra,       'pt-grp-ih-ex'),
+    renderGroup('Inter Cadet College',            interCollege,  'pt-grp-icc'),
+    renderGroup('National',                       national,      'pt-grp-nat'),
+    renderGroup('International',                  international, 'pt-grp-intl'),
+  ].filter(Boolean).join('') || `<span class="pt-empty">No achievement records found.</span>`
 
   // ── Photo ─────────────────────────────────────────────────────────────────
   const photoSrc = cadet.photo_url || ''
@@ -683,33 +707,26 @@ function buildPrintHTML(cadet, academicMap, extraCurricular, coCurricular, other
       </table>
     </div>
 
-    <!-- ══ ACHIEVEMENTS ════════════════════════════════════ -->
-    <div class="pt-lower">
+    <!-- ══ ACHIEVEMENTS — FULL WIDTH ══════════════════════ -->
+    <div class="pt-section-title">Achievements &amp; Honours</div>
+    <div class="pt-ach-container">${achievementsHTML}</div>
 
-      <div class="pt-lower-col">
-        <div class="pt-section-title">Achievements &amp; Honours</div>
-        <div class="pt-ach-container">${achievementsHTML}</div>
-      </div>
-
-      <div class="pt-lower-col">
-        <div class="pt-section-title">Discipline Record</div>
-        <table class="pt-disc-table">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>VII</th><th>VIII</th><th>IX</th><th>X</th><th>XI</th><th>XII</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Conduct Grade</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td>Extra Drills</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td>Confinements</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td>Restrictions</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
+    <!-- ══ DISCIPLINE RECORD ════════════════════════════════ -->
+    <div class="pt-section-title" style="margin-top:5pt;">Discipline Record</div>
+    <table class="pt-disc-table">
+      <thead>
+        <tr>
+          <th class="pt-disc-label-head">Category</th>
+          <th>VII</th><th>VIII</th><th>IX</th><th>X</th><th>XI</th><th>XII</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Conduct Grade</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Extra Drills</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Confinements</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Restrictions</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
 
     <!-- ══ FOOTER ════════════════════════════════════════════ -->
     <div class="pt-footer">
