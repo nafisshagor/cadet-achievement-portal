@@ -4292,16 +4292,23 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
   @page {
     size: A4 landscape;
-    margin: 0.55cm 0.65cm;
+    margin: 1cm 1.2cm;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
   }
 
   body > *:not(#ccams-print-frame) { display: none !important; }
 
   #ccams-print-frame {
     display: block !important;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: static !important;
+    width: 100%;
+    height: auto;
+    top: auto; left: auto;
   }
 
   .no-print { display: none !important; }
@@ -4310,7 +4317,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
 /* ── Page shell ──────────────────────────────────────────── */
 .pt-page {
   width: 100%;
-  height: 100%;
+  height: auto;
+  min-height: 0;
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   font-size: 7.5pt;
   color: #1e293b;
@@ -4675,10 +4683,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 3pt;
+  padding-top: 4pt;
   border-top: 0.5pt solid #cbd5e1;
   font-size: 6.5pt;
   color: #64748b;
   flex-shrink: 0;
-  margin-top: auto;
+  margin-top: 6pt;
 }
