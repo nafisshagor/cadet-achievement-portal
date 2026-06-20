@@ -1624,24 +1624,26 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 
-/* Square (non-circular) variant — for logos that aren't circular */
+/* Square (non-circular) variant — MCC only: transparent bg, no clipping */
 .college-logo-icon--square {
-  border-radius: 8px !important;
-  padding: 3px;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 10px !important;
+  padding: 2px;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
 .college-card-logo {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: inherit;
   display: block;
 }
 
+/* Square logo image: no radius, let the full transparent PNG show */
 .college-logo-icon--square .college-card-logo {
-  border-radius: 4px;
-  object-fit: contain;
+  border-radius: 0;
 }
 
 .college-card-logo-fallback {
@@ -1671,11 +1673,13 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   box-shadow: var(--shadow-sm);
 }
 
-/* Square variant for banner logo */
+/* Square variant for banner logo — MCC only */
 .college-banner-logo--square {
-  border-radius: 8px !important;
-  background: transparent;
-  border-color: transparent;
+  border-radius: 10px !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
 .college-banner-logo-img {
@@ -1695,8 +1699,9 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   font-size: 1.4rem;
 }
 
-[data-theme="dark"] .college-logo-icon,
-[data-theme="dark"] .college-banner-logo {
+/* Dark theme: only apply surface bg to circular logos, not square ones */
+[data-theme="dark"] .college-logo-icon:not(.college-logo-icon--square),
+[data-theme="dark"] .college-banner-logo:not(.college-banner-logo--square) {
   background: var(--surface-solid);
 }
 
