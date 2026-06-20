@@ -69,5 +69,4 @@ export const COLLEGE_LOGOS = {
 // (transparent-background PNGs that are not circular in shape)
 export const COLLEGE_LOGO_SQUARE = new Set([
   'Mirzapur Cadet College',
-  'Sylhet Cadet College',
 ])
