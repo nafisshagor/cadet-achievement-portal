@@ -371,17 +371,31 @@ export async function printProfile() {
       if (k === 'class') className = v.join('=')
     })
     if (!disciplineMap[className]) disciplineMap[className] = {}
-    const parts = (a.level || '').split(',')
+
+    // Discipline counts are stored in the title as "Discipline Extra Drills: 2, Warnings: 1 YYYY"
+    // Extract the middle portion by stripping the "Discipline " prefix and " YYYY" suffix,
+    // then fall back to a.level for any older records that stored it there.
+    const typeLabel = 'Discipline'
+    let disciplineStr = a.level || ''
+    if (!disciplineStr) {
+      // Parse from title: "Discipline <items> <year>"
+      let t = (a.title || '').trim()
+      if (t.startsWith(typeLabel + ' ')) t = t.slice(typeLabel.length + 1)
+      // Strip trailing 4-digit year
+      t = t.replace(/\s+\d{4}$/, '').trim()
+      disciplineStr = t
+    }
+
+    const parts = disciplineStr.split(',')
     parts.forEach(p => {
       const m = p.trim().match(/^(.+?)(?::\s*(\d+))?$/)
       if (!m) return
       const label = m[1].trim()
       const count = m[2] || '\u2713'
-      if (/extra drill/i.test(label))     disciplineMap[className].extraDrills  = count
-      if (/monetary fine/i.test(label) || /confinement/i.test(label))
-                                          disciplineMap[className].confinements = count
-      if (/parents/i.test(label))         disciplineMap[className].parentsCall  = count
-      if (/warning/i.test(label))         disciplineMap[className].warnings     = count
+      if (/extra drill/i.test(label))                                       disciplineMap[className].extraDrills  = count
+      if (/monetary fine/i.test(label) || /confinement/i.test(label))       disciplineMap[className].confinements = count
+      if (/parents/i.test(label))                                            disciplineMap[className].parentsCall  = count
+      if (/warning/i.test(label))                                            disciplineMap[className].warnings     = count
     })
   })
 
