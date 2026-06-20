@@ -1,4 +1,4 @@
-import { supabase, ROLES } from './supabase'
+import { supabase, ROLES, COLLEGES } from './supabase'
 import { getCurrentStaff } from './auth'
 import { viewCadet, closeProfile, gotoCadetProfilePage } from './profile'
 import { openAchievementForm } from './achievements'
@@ -9,11 +9,54 @@ import { escapeHTML, showToast, setButtonLoading, formatHouse } from './ui'
 let allCadets = []
 let pendingBulkRecords = []
 let selectedIntake = null
+let selectedCollegeForRecords = null  // tracks which college system admin has selected
 
 // ─── Load Cadets (Entry Point) ────────────────────────────────────────────────
 
 export async function loadCadets() {
-  await loadIntakeSelection()
+  const staff = getCurrentStaff()
+  if (!staff) return
+
+  if (staff.role === ROLES.SYSTEM_ADMIN) {
+    // System admin: show college selection first
+    selectedCollegeForRecords = null
+    showCollegeSelectionStage()
+  } else {
+    // Everyone else: go straight to intake selection for their own college
+    selectedCollegeForRecords = staff.college
+    await loadIntakeSelection()
+  }
+}
+
+// ─── Stage 0: College Selection (System Admin only) ──────────────────────────
+
+function showCollegeSelectionStage() {
+  document.getElementById('collegeSelectionStage')?.classList.remove('hidden')
+  document.getElementById('intakeSelectionStage')?.classList.add('hidden')
+  document.getElementById('cadetListStage')?.classList.add('hidden')
+
+  const container = document.getElementById('collegeCardsContainer')
+  if (!container) return
+
+  container.innerHTML = COLLEGES.map(college => `
+    <button class="intake-card college-select-card" data-college="${escapeHTML(college)}">
+      <div class="intake-card-icon">
+        <i class="fa-solid fa-building-columns"></i>
+      </div>
+      <div class="intake-card-label" style="font-size:0.65rem;">Cadet College</div>
+      <div class="intake-card-value" style="font-size:0.78rem;line-height:1.25;">${escapeHTML(college.replace(' Cadet College', ''))}</div>
+    </button>
+  `).join('')
+
+  container.querySelectorAll('.college-select-card').forEach(card => {
+    card.addEventListener('click', async () => {
+      selectedCollegeForRecords = card.dataset.college
+      const label = document.getElementById('activeCollegeLabel')
+      if (label) label.textContent = selectedCollegeForRecords
+      document.getElementById('collegeSelectionStage')?.classList.add('hidden')
+      await loadIntakeSelection()
+    })
+  })
 }
 
 // ─── Stage 1: Intake Selection ────────────────────────────────────────────────
@@ -24,13 +67,29 @@ async function loadIntakeSelection() {
 
   if (!container || !staff) return
 
+  // Show stage 1, hide others
+  document.getElementById('collegeSelectionStage')?.classList.add('hidden')
+  document.getElementById('intakeSelectionStage')?.classList.remove('hidden')
+  document.getElementById('cadetListStage')?.classList.add('hidden')
+
+  // Show "Back to Colleges" only for system admin
+  const backBtn = document.getElementById('backToCollegesBtn')
+  if (backBtn) {
+    backBtn.classList.toggle('hidden', staff.role !== ROLES.SYSTEM_ADMIN)
+  }
+
+  // Update college label in header
+  const label = document.getElementById('activeCollegeLabel')
+  if (label) label.textContent = college
+
   container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">Loading intakes...</div>`
 
-  // Fetch all cadets for this college
+  const college = selectedCollegeForRecords || staff.college
+
   const { data, error } = await supabase
     .from('cadets')
     .select('intake, college, form, id')
-    .eq('college', staff.college)
+    .eq('college', college)
     .order('intake', { ascending: false })
 
   if (error) {
@@ -135,11 +194,12 @@ async function loadCadetsForIntake(intake, formFilter = '') {
 
   container.innerHTML = `<div class="text-center py-10 text-slate-500">Loading cadets...</div>`
 
-  // Fetch cadets for this intake
+  const college = selectedCollegeForRecords || staff.college
+
   let query = supabase
     .from('cadets')
     .select('*')
-    .eq('college', staff.college)
+    .eq('college', college)
     .eq('intake', intake)
     .order('cadet_no', { ascending: true })
 
@@ -253,13 +313,19 @@ function isFormMasterAssigned(cadet, staff) {
 // ─── Navigation ───────────────────────────────────────────────────────────────
 
 export function setupCadetRecordsNavigation() {
-  // Back button
+  // Back button from cadet list → intake selection (or college selection for system admin)
   document.getElementById('backToIntakesBtn')?.addEventListener('click', () => {
-    closeProfile() // Hide the profile card first
-    // Then hide cadet list and show intake selection
-    document.getElementById('cadetListStage').classList.add('hidden')
-    document.getElementById('intakeSelectionStage').classList.remove('hidden')
+    closeProfile()
+    document.getElementById('cadetListStage')?.classList.add('hidden')
+    document.getElementById('intakeSelectionStage')?.classList.remove('hidden')
     selectedIntake = null
+  })
+
+  // Back button from intake selection → college selection (system admin only)
+  document.getElementById('backToCollegesBtn')?.addEventListener('click', () => {
+    document.getElementById('intakeSelectionStage')?.classList.add('hidden')
+    document.getElementById('collegeSelectionStage')?.classList.remove('hidden')
+    selectedCollegeForRecords = null
   })
 
   // Form filter

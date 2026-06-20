@@ -318,9 +318,19 @@ function onCategoryChange() {
     populateYearGradeDropdown(activeCadetClass, true)
     switchModalMode('academics')
     onYearChange()
+  } else if (category === 'Other') {
+    populateYearGradeDropdown(activeCadetClass, false)
+    switchModalMode('competition')
+    // Hide IH fields and standard name/event wraps; show only Other name + position/remarks/description
+    updateInterHouseVisibility(false)
+    document.getElementById('competitionNameWrap')?.classList.add('hidden')
+    document.getElementById('competitionEventWrap')?.classList.add('hidden')
+    document.getElementById('otherCompNameWrap')?.classList.remove('hidden')
+    updatePreview()
   } else {
     populateYearGradeDropdown(activeCadetClass, false)
     switchModalMode('competition')
+    document.getElementById('otherCompNameWrap')?.classList.add('hidden')
     updateInterHouseVisibility(category === 'Inter-house')
     updatePreview()
   }
@@ -675,7 +685,7 @@ function makeGradeOption(year, gradeNum) {
 
 function resetCompetitionFields() {
   ;['achievementTitle', 'achievementEvent', 'achievementLevel',
-    'achievementExtra', 'achievementRemarks', 'achievementDescription'
+    'achievementExtra', 'achievementRemarks', 'achievementDescription', 'otherCompName'
   ].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.value = ''
@@ -695,6 +705,7 @@ function resetCompetitionFields() {
   document.getElementById('ihAthlGroupWrap')?.classList.add('hidden')
   document.getElementById('ihSubEventWrap')?.classList.add('hidden')
   document.getElementById('ihOtherNameWrap')?.classList.add('hidden')
+  document.getElementById('otherCompNameWrap')?.classList.add('hidden')
   const honourWrap = document.getElementById('ihHonourWrap')
   if (honourWrap) {
     honourWrap.classList.add('hidden')
@@ -799,11 +810,7 @@ async function saveCompetitionFromForm() {
     if (!activityType)    { showToast('Please select an activity type.', 'warning'); return }
     if (!competitionName) {
       const compVal = document.getElementById('ihCompetition')?.value
-      if (compVal === '__other__') {
-        showToast('Please enter a competition name.', 'warning')
-      } else {
-        showToast('Please select a competition.', 'warning')
-      }
+      showToast(compVal === '__other__' ? 'Please enter a competition name.' : 'Please select a competition.', 'warning')
       return
     }
 
@@ -815,6 +822,10 @@ async function saveCompetitionFromForm() {
       if (!honours) { showToast('Please check at least one award option.', 'warning'); return }
       level = honours
     }
+  } else if (category === 'Other') {
+    competitionName = document.getElementById('otherCompName')?.value.trim()
+    event           = ''
+    if (!competitionName) { showToast('Please enter a competition name.', 'warning'); return }
   } else {
     competitionName = document.getElementById('achievementTitle')?.value.trim()
     event           = document.getElementById('achievementEvent')?.value.trim()

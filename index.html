@@ -423,6 +423,25 @@
       <!-- ══ CADET RECORDS PAGE ══════════════════════════════ -->
       <section id="cadetRecordsPage" class="dashboard-page hidden">
         
+        <!-- Stage 0: Select College (System Admin only) -->
+        <div id="collegeSelectionStage" class="hidden">
+          <div class="page-hero records-hero mb-5">
+            <div class="flex items-center gap-4">
+              <div class="page-hero-icon records-icon">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div class="flex-1">
+                <p class="page-hero-label records-label">System Admin View</p>
+                <h2 class="page-hero-title records-title">Select College</h2>
+                <p class="page-hero-subtitle records-subtitle">Choose a cadet college to view its records.</p>
+              </div>
+            </div>
+          </div>
+          <div id="collegeCardsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- College cards populated by JS -->
+          </div>
+        </div>
+
         <!-- Stage 1: Select Intake -->
         <div id="intakeSelectionStage">
           <div class="page-hero records-hero mb-5">
@@ -432,9 +451,12 @@
               </div>
               <div class="flex-1">
                 <p class="page-hero-label records-label">Cadet Database</p>
-                <h2 class="page-hero-title records-title">Select Intake</h2>
+                <h2 class="page-hero-title records-title">Select Intake — <span id="activeCollegeLabel" class="text-emerald-600"></span></h2>
                 <p class="page-hero-subtitle records-subtitle">Choose an intake to view cadet records and achievements.</p>
               </div>
+              <button id="backToCollegesBtn" class="portal-btn-ghost px-4 py-2 text-sm hidden no-print">
+                <i class="fa-solid fa-arrow-left"></i> All Colleges
+              </button>
             </div>
           </div>
           <div id="intakeCardsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -1096,6 +1118,7 @@
             <option value="Inter-college">Inter Cadet College</option>
             <option value="National">National</option>
             <option value="International">International</option>
+            <option value="Other">Other</option>
             <option value="Academics">Academics</option>
           </select>
         </div>
@@ -1164,6 +1187,12 @@
             <label class="portal-label">Event <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
             <input id="achievementEvent" type="text" placeholder="e.g. Tagore Song, Patriotic Song, Junior Group, Regional Round" class="portal-input">
             <p class="text-xs text-slate-400 mt-1.5">Sub-event under the competition (for grouped achievements)</p>
+          </div>
+
+          <!-- Other type: minimal free-text form -->
+          <div id="otherCompNameWrap" class="hidden">
+            <label class="portal-label">Competition Name <span class="text-red-500">*</span></label>
+            <input id="otherCompName" type="text" placeholder="e.g. Inter-School Debate, Science Olympiad…" class="portal-input">
           </div>
 
           <div id="ihPositionWrap">
