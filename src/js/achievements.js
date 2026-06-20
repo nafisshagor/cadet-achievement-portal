@@ -16,6 +16,7 @@ const TYPE_LABELS = {
   'Inter-college': 'Inter Cadet College',
   'National': 'National',
   'International': 'International',
+  'Other': 'Other',
   'Academics': 'Academics'
 }
 
@@ -24,6 +25,7 @@ const TYPE_SECTION_LABELS = {
   'Inter-college': 'Inter Cadet College Competitions',
   'National': 'National Competitions',
   'International': 'International Competitions',
+  'Other': 'Other Competitions',
   'Academics': 'Academic Results'
 }
 
@@ -1184,8 +1186,17 @@ export async function openEditAchievementForm(achievement) {
           }
         }
       }
+    } else if (achievement.category === 'Other') {
+      updateInterHouseVisibility(false)
+      document.getElementById('competitionNameWrap')?.classList.add('hidden')
+      document.getElementById('competitionEventWrap')?.classList.add('hidden')
+      document.getElementById('otherCompNameWrap')?.classList.remove('hidden')
+      const otherInput = document.getElementById('otherCompName')
+      if (otherInput) otherInput.value = parsed.competitionName
+      setupModalListeners()
     } else {
       updateInterHouseVisibility(false)
+      document.getElementById('otherCompNameWrap')?.classList.add('hidden')
       document.getElementById('achievementTitle').value = parsed.competitionName
       document.getElementById('achievementEvent').value = parsed.event
       setupModalListeners()

@@ -78,13 +78,13 @@ async function loadIntakeSelection() {
     backBtn.classList.toggle('hidden', staff.role !== ROLES.SYSTEM_ADMIN)
   }
 
-  // Update college label in header
-  const label = document.getElementById('activeCollegeLabel')
-  if (label) label.textContent = college
-
   container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">Loading intakes...</div>`
 
   const college = selectedCollegeForRecords || staff.college
+
+  // Update college label in header
+  const label = document.getElementById('activeCollegeLabel')
+  if (label) label.textContent = college
 
   const { data, error } = await supabase
     .from('cadets')

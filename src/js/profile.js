@@ -456,7 +456,7 @@ function formatAchForPrint(item) {
 
   const typeLabels = {
     'Inter-house': 'Inter House', 'Inter-college': 'Inter Cadet College',
-    'National': 'National', 'International': 'International'
+    'National': 'National', 'International': 'International', 'Other': 'Other'
   }
   const typeLabel = typeLabels[item.category] || item.category
   const title = item.title || ''
@@ -656,6 +656,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
     const interCollege_g = items.filter(a => a.category === 'Inter-college')
     const national_g     = items.filter(a => a.category === 'National')
     const international_g= items.filter(a => a.category === 'International')
+    const other_g        = items.filter(a => a.category === 'Other')
 
     return [
       renderCatRow('IH Co-Curricular',    ihCo_g,          'pt-grp-ih-co'),
@@ -664,6 +665,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
       renderCatRow('Inter Cadet College', interCollege_g,  'pt-grp-icc'),
       renderCatRow('National',            national_g,      'pt-grp-nat'),
       renderCatRow('International',       international_g, 'pt-grp-intl'),
+      renderCatRow('Other',               other_g,         'pt-grp-other'),
     ].filter(Boolean).join('')
   }
 
