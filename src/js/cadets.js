@@ -239,7 +239,8 @@ function renderCadetTable(cadets, staff) {
     return
   }
 
-  const canEdit = staff.role === ROLES.FORM_MASTER
+  const canEdit   = staff.role === ROLES.FORM_MASTER
+  const canPrint  = staff.role === ROLES.FORM_MASTER || staff.role === ROLES.ADMIN || staff.role === ROLES.SYSTEM_ADMIN
   const canDelete = staff.role === ROLES.ADMIN || staff.role === ROLES.SYSTEM_ADMIN
 
   container.innerHTML = `
@@ -258,6 +259,7 @@ function renderCadetTable(cadets, staff) {
         <tbody>
           ${cadets.map(cadet => {
             const isAssignedToFM = canEdit && isFormMasterAssigned(cadet, staff)
+            const canGoToProfile = canPrint  // admins can also access full profile for printing
             
             return `
               <tr>
@@ -271,7 +273,7 @@ function renderCadetTable(cadets, staff) {
                     <button data-id="${cadet.id}" class="view-cadet-btn portal-btn-primary py-2 px-3 text-xs">
                       <i class="fa-solid fa-eye"></i> View
                     </button>
-                    ${isAssignedToFM ? `
+                    ${canGoToProfile ? `
                       <button data-id="${cadet.id}" class="goto-cadet-profile-btn animated-arrow-btn" title="Go to Cadet Profile">
                         <i class="fa-solid fa-chevron-right"></i>
                       </button>

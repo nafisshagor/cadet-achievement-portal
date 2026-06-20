@@ -1119,6 +1119,7 @@
             <option value="National">National</option>
             <option value="International">International</option>
             <option value="Other">Other</option>
+            <option value="Discipline">Discipline</option>
             <option value="Academics">Academics</option>
           </select>
         </div>
@@ -1193,6 +1194,37 @@
           <div id="otherCompNameWrap" class="hidden">
             <label class="portal-label">Competition Name <span class="text-red-500">*</span></label>
             <input id="otherCompName" type="text" placeholder="e.g. Inter-School Debate, Science Olympiad…" class="portal-input">
+          </div>
+
+          <!-- Discipline type -->
+          <div id="disciplineFields" class="hidden space-y-3">
+            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide">Select all that apply and enter counts</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="discipline-item">
+                <label class="flex items-center gap-2 font-semibold text-sm text-slate-700 mb-1">
+                  <input type="checkbox" id="discExtraDrills" class="disc-checkbox accent-red-500"> Extra Drills
+                </label>
+                <input id="discExtraDrillsCount" type="number" min="1" placeholder="Count" class="portal-input text-sm" disabled>
+              </div>
+              <div class="discipline-item">
+                <label class="flex items-center gap-2 font-semibold text-sm text-slate-700 mb-1">
+                  <input type="checkbox" id="discConfinements" class="disc-checkbox accent-red-500"> Confinements
+                </label>
+                <input id="discConfinementsCount" type="number" min="1" placeholder="Count" class="portal-input text-sm" disabled>
+              </div>
+              <div class="discipline-item">
+                <label class="flex items-center gap-2 font-semibold text-sm text-slate-700 mb-1">
+                  <input type="checkbox" id="discParentsCall" class="disc-checkbox accent-red-500"> Parents' Call
+                </label>
+                <input id="discParentsCallCount" type="number" min="1" placeholder="Count" class="portal-input text-sm" disabled>
+              </div>
+              <div class="discipline-item">
+                <label class="flex items-center gap-2 font-semibold text-sm text-slate-700 mb-1">
+                  <input type="checkbox" id="discWarnings" class="disc-checkbox accent-red-500"> Warnings
+                </label>
+                <input id="discWarningsCount" type="number" min="1" placeholder="Count" class="portal-input text-sm" disabled>
+              </div>
+            </div>
           </div>
 
           <div id="ihPositionWrap">

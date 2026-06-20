@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('saveAchievementBtn')?.addEventListener('click', saveAchievementFromForm)
   document.getElementById('closeAchievementBtn')?.addEventListener('click', closeAchievementForm)
 
+  // ── Discipline checkboxes — enable/disable count inputs ───────────────────
+  ;['discExtraDrills','discConfinements','discParentsCall','discWarnings'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', (e) => {
+      const countInput = document.getElementById(id + 'Count')
+      if (countInput) {
+        countInput.disabled = !e.target.checked
+        if (!e.target.checked) countInput.value = ''
+      }
+    })
+  })
+
   // ── Staff Registry ────────────────────────────────────────────────────────
   document.getElementById('registerStaffBtn')?.addEventListener('click', registerStaff)
   document.getElementById('bulkDeleteStaffBtn')?.addEventListener('click', bulkDeleteStaff)

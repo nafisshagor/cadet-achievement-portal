@@ -4306,6 +4306,11 @@ body.login-mode { overflow: hidden; height: 100vh; }
   white-space: nowrap;
 }
 .pt-disc-table td { height: 13pt; }
+.pt-disc-has-val {
+  font-weight: 700;
+  color: #991b1b !important;
+  background: #fef2f2 !important;
+}
 
 /* ── Footer ──────────────────────────────────────────────── */
 .pt-footer {

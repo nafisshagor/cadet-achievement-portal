@@ -17,6 +17,7 @@ const TYPE_LABELS = {
   'National': 'National',
   'International': 'International',
   'Other': 'Other',
+  'Discipline': 'Discipline',
   'Academics': 'Academics'
 }
 
@@ -26,6 +27,7 @@ const TYPE_SECTION_LABELS = {
   'National': 'National Competitions',
   'International': 'International Competitions',
   'Other': 'Other Competitions',
+  'Discipline': 'Discipline Records',
   'Academics': 'Academic Results'
 }
 
@@ -323,11 +325,27 @@ function onCategoryChange() {
   } else if (category === 'Other') {
     populateYearGradeDropdown(activeCadetClass, false)
     switchModalMode('competition')
-    // Hide IH fields and standard name/event wraps; show only Other name + position/remarks/description
     updateInterHouseVisibility(false)
     document.getElementById('competitionNameWrap')?.classList.add('hidden')
     document.getElementById('competitionEventWrap')?.classList.add('hidden')
     document.getElementById('otherCompNameWrap')?.classList.remove('hidden')
+    document.getElementById('disciplineFields')?.classList.add('hidden')
+    document.getElementById('ihPositionWrap')?.classList.remove('hidden')
+    document.getElementById('ihExtraWrap')?.classList.remove('hidden')
+    document.getElementById('ihRemarksWrap')?.classList.remove('hidden')
+    updatePreview()
+  } else if (category === 'Discipline') {
+    populateYearGradeDropdown(activeCadetClass, false)
+    switchModalMode('competition')
+    updateInterHouseVisibility(false)
+    document.getElementById('competitionNameWrap')?.classList.add('hidden')
+    document.getElementById('competitionEventWrap')?.classList.add('hidden')
+    document.getElementById('otherCompNameWrap')?.classList.add('hidden')
+    document.getElementById('disciplineFields')?.classList.remove('hidden')
+    // Hide position/extra for discipline — counts are in the checkboxes
+    document.getElementById('ihPositionWrap')?.classList.add('hidden')
+    document.getElementById('ihExtraWrap')?.classList.add('hidden')
+    document.getElementById('ihRemarksWrap')?.classList.remove('hidden')
     updatePreview()
   } else {
     populateYearGradeDropdown(activeCadetClass, false)
@@ -687,10 +705,18 @@ function makeGradeOption(year, gradeNum) {
 
 function resetCompetitionFields() {
   ;['achievementTitle', 'achievementEvent', 'achievementLevel',
-    'achievementExtra', 'achievementRemarks', 'achievementDescription', 'otherCompName'
+    'achievementExtra', 'achievementRemarks', 'achievementDescription', 'otherCompName',
+    'discExtraDrillsCount','discConfinementsCount','discParentsCallCount','discWarningsCount'
   ].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.value = ''
+  })
+  // Uncheck discipline checkboxes and disable counts
+  ;['discExtraDrills','discConfinements','discParentsCall','discWarnings'].forEach(id => {
+    const cb = document.getElementById(id)
+    if (cb) { cb.checked = false }
+    const count = document.getElementById(id + 'Count')
+    if (count) { count.disabled = true; count.value = '' }
   })
   // Reset Inter House dropdowns
   const ihActivity = document.getElementById('ihActivityType')
@@ -708,6 +734,7 @@ function resetCompetitionFields() {
   document.getElementById('ihSubEventWrap')?.classList.add('hidden')
   document.getElementById('ihOtherNameWrap')?.classList.add('hidden')
   document.getElementById('otherCompNameWrap')?.classList.add('hidden')
+  document.getElementById('disciplineFields')?.classList.add('hidden')
   const honourWrap = document.getElementById('ihHonourWrap')
   if (honourWrap) {
     honourWrap.classList.add('hidden')
@@ -828,6 +855,22 @@ async function saveCompetitionFromForm() {
     competitionName = document.getElementById('otherCompName')?.value.trim()
     event           = ''
     if (!competitionName) { showToast('Please enter a competition name.', 'warning'); return }
+  } else if (category === 'Discipline') {
+    // Build competitionName from checked items
+    const discItems = [
+      { id: 'discExtraDrills',  label: 'Extra Drills' },
+      { id: 'discConfinements', label: 'Confinements' },
+      { id: 'discParentsCall',  label: "Parents' Call" },
+      { id: 'discWarnings',     label: 'Warnings' }
+    ]
+    const checkedItems = discItems.filter(d => document.getElementById(d.id)?.checked)
+    if (!checkedItems.length) { showToast('Please select at least one discipline type.', 'warning'); return }
+    // competitionName = "Extra Drills: 2, Warnings: 1" etc.
+    competitionName = checkedItems.map(d => {
+      const count = document.getElementById(d.id + 'Count')?.value.trim()
+      return count ? `${d.label}: ${count}` : d.label
+    }).join(', ')
+    event = ''
   } else {
     competitionName = document.getElementById('achievementTitle')?.value.trim()
     event           = document.getElementById('achievementEvent')?.value.trim()
@@ -1191,8 +1234,39 @@ export async function openEditAchievementForm(achievement) {
       document.getElementById('competitionNameWrap')?.classList.add('hidden')
       document.getElementById('competitionEventWrap')?.classList.add('hidden')
       document.getElementById('otherCompNameWrap')?.classList.remove('hidden')
+      document.getElementById('disciplineFields')?.classList.add('hidden')
       const otherInput = document.getElementById('otherCompName')
       if (otherInput) otherInput.value = parsed.competitionName
+      setupModalListeners()
+    } else if (achievement.category === 'Discipline') {
+      updateInterHouseVisibility(false)
+      document.getElementById('competitionNameWrap')?.classList.add('hidden')
+      document.getElementById('competitionEventWrap')?.classList.add('hidden')
+      document.getElementById('otherCompNameWrap')?.classList.add('hidden')
+      document.getElementById('disciplineFields')?.classList.remove('hidden')
+      document.getElementById('ihPositionWrap')?.classList.add('hidden')
+      document.getElementById('ihExtraWrap')?.classList.add('hidden')
+      // Parse stored "Extra Drills: 2, Warnings: 1" back into checkboxes
+      const discMap = {
+        'Extra Drills':  'discExtraDrills',
+        'Confinements':  'discConfinements',
+        "Parents' Call": 'discParentsCall',
+        'Warnings':      'discWarnings'
+      }
+      const parts = (parsed.competitionName || '').split(',')
+      parts.forEach(part => {
+        const m = part.trim().match(/^(.+?)(?::\s*(\d+))?$/)
+        if (!m) return
+        const label = m[1].trim()
+        const count = m[2] || ''
+        const cbId  = discMap[label]
+        if (cbId) {
+          const cb = document.getElementById(cbId)
+          const ci = document.getElementById(cbId + 'Count')
+          if (cb) { cb.checked = true }
+          if (ci) { ci.disabled = false; ci.value = count }
+        }
+      })
       setupModalListeners()
     } else {
       updateInterHouseVisibility(false)
@@ -1375,8 +1449,8 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
     }
   }
 
-  // Competition items
-  data.filter(item => item.category !== 'Academics').forEach(item => {
+  // Competition items (excluding Academics and Discipline — handled separately)
+  data.filter(item => item.category !== 'Academics' && item.category !== 'Discipline').forEach(item => {
     const parsed     = parseAchievement(item)
     const yearKey    = parsed.year || 'No Year'
     const classLabel = CLASS_TO_GRADE[parsed.className] || (parsed.className ? `Class ${parsed.className}` : '')
@@ -1389,6 +1463,9 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
     if (!yearGroups[yearKey].types[parsed.type][compKey]) yearGroups[yearKey].types[parsed.type][compKey] = []
     yearGroups[yearKey].types[parsed.type][compKey].push({ ...parsed, _raw: item })
   })
+
+  // Discipline items — collected separately for their own block
+  const disciplineItems = data.filter(item => item.category === 'Discipline')
 
   // Academic items — slot into their year
   data.filter(item => item.category === 'Academics').forEach(item => {
@@ -1405,9 +1482,60 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
     return Number(b) - Number(a)
   })
 
-  const typeOrder = ['Inter-house', 'Inter-college', 'National', 'International']
+  const typeOrder = ['Inter-house', 'Inter-college', 'National', 'International', 'Other']
 
   // ── Render ────────────────────────────────────────────────────────────────
+  // Build discipline block (shown once, not per-year)
+  const disciplineHtml = disciplineItems.length ? `
+    <div class="ach-type-block ach-type-discipline">
+      <div class="ach-type-header">
+        <span class="ach-type-bullet" style="background:#dc2626;"></span>
+        <h4 style="color:#dc2626;">Discipline Records</h4>
+      </div>
+      <div class="ach-type-body" style="border-left-color:#dc2626;">
+        ${disciplineItems.map(item => {
+          const parsed = parseAchievement(item)
+          // competitionName = "Extra Drills: 2, Warnings: 1"
+          const entries = (parsed.competitionName || '').split(',').map(s => s.trim()).filter(Boolean)
+          const year    = parsed.year || ''
+          const cls     = parsed.className ? ` · Class ${parsed.className}` : ''
+          return `
+            <div class="ach-competition-block">
+              <div class="ach-competition-name" style="color:#dc2626;">
+                ${escapeHTML(year)}${escapeHTML(cls)}
+              </div>
+              <div class="ach-events-list">
+                ${entries.map(e => `
+                  <div class="ach-event-row">
+                    <div class="ach-event-marker" style="background:#dc2626;"></div>
+                    <div class="ach-event-content">
+                      <div class="ach-event-line">
+                        <span class="ach-event-text" style="color:#dc2626;">${escapeHTML(e)}</span>
+                      </div>
+                    </div>
+                    ${canEdit ? `
+                      <div class="ach-event-actions no-print">
+                        <button class="edit-achievement-btn ach-edit-btn"
+                                data-achievement='${JSON.stringify(item).replace(/'/g, "&#39;")}' title="Edit">
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="delete-achievement-btn ach-del-btn"
+                                data-id="${item.id}" data-cadet-id="${item.cadet_id}" title="Delete">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+                ${parsed.description ? `<div class="ach-event-remarks"><i class="fa-solid fa-quote-left"></i> ${escapeHTML(parsed.description)}</div>` : ''}
+              </div>
+            </div>
+          `
+        }).join('')}
+      </div>
+    </div>
+  ` : ''
+
   const html = sortedYears.map(yearKey => {
     const group       = yearGroups[yearKey]
     const sortedTypes = typeOrder.filter(t => group.types[t])
@@ -1469,7 +1597,7 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
     `
   }).join('')
 
-  container.innerHTML = html
+  container.innerHTML = html + disciplineHtml
   wireButtons(container, canEdit)
 }
 

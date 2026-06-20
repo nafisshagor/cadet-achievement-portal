@@ -200,7 +200,10 @@ function closeReadOnlyProfileModal() {
 
 export async function renderProfile(cadet) {
   const staff = getCurrentStaff()
-  const canEdit = staff?.role === ROLES.FORM_MASTER
+  const canEdit  = staff?.role === ROLES.FORM_MASTER
+  const canPrint = staff?.role === ROLES.FORM_MASTER ||
+                   staff?.role === ROLES.ADMIN ||
+                   staff?.role === ROLES.SYSTEM_ADMIN
 
   // Photo
   const photo = document.getElementById('cadetPhoto')
@@ -247,6 +250,17 @@ export async function renderProfile(cadet) {
     if (canEdit) {
       btn.classList.remove('hidden')
       btn.onclick = () => { openAchievementForm(cadet.id) }
+    } else {
+      btn.classList.add('hidden')
+    }
+  })
+
+  // Print button — visible to Form Master, College Admin, and System Admin
+  ;['printBtn', 'printBtnDesktop'].forEach(id => {
+    const btn = document.getElementById(id)
+    if (!btn) return
+    if (canPrint) {
+      btn.classList.remove('hidden')
     } else {
       btn.classList.add('hidden')
     }
@@ -339,14 +353,35 @@ export async function printProfile() {
   const allAch = achievements || []
 
   // ── Parse academics into a keyed map ──────────────────────────────────────
-  // Key: gradeLabel (VII, VIII, IX, X, XI, XII, SSC, HSC)
   const academicMap = {}
   allAch.filter(a => a.category === 'Academics').forEach(a => {
     const parsed = parseAcademicForPrint(a)
-    if (parsed.gradeLabel) {
-      // If duplicate, keep the latest (last one wins)
-      academicMap[parsed.gradeLabel] = parsed
-    }
+    if (parsed.gradeLabel) academicMap[parsed.gradeLabel] = parsed
+  })
+
+  // ── Discipline items keyed by class ───────────────────────────────────────
+  // disciplineMap[className] = { extraDrills, confinements, parentsCall, warnings }
+  const disciplineMap = {}
+  allAch.filter(a => a.category === 'Discipline').forEach(a => {
+    const desc = a.description || ''
+    let className = ''
+    const metaLine = desc.split('\n').find(l => l.startsWith('META|')) || ''
+    metaLine.substring(5).split('|').forEach(pair => {
+      const [k, ...v] = pair.split('=')
+      if (k === 'class') className = v.join('=')
+    })
+    if (!disciplineMap[className]) disciplineMap[className] = {}
+    const parts = (a.level || '').split(',')
+    parts.forEach(p => {
+      const m = p.trim().match(/^(.+?)(?::\s*(\d+))?$/)
+      if (!m) return
+      const label = m[1].trim()
+      const count = m[2] || '\u2713'
+      if (/extra drill/i.test(label))   disciplineMap[className].extraDrills  = count
+      if (/confinement/i.test(label))   disciplineMap[className].confinements = count
+      if (/parents/i.test(label))       disciplineMap[className].parentsCall  = count
+      if (/warning/i.test(label))       disciplineMap[className].warnings     = count
+    })
   })
 
   // ── Separate competition achievements ────────────────────────────────────
@@ -356,7 +391,7 @@ export async function printProfile() {
   // ── Build the print frame ─────────────────────────────────────────────────
   const frame = document.createElement('div')
   frame.id = 'ccams-print-frame'
-  frame.innerHTML = buildPrintHTML(cadet, academicMap, competitionAch)
+  frame.innerHTML = buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap)
   document.body.appendChild(frame)
 
   // Force light theme
@@ -470,9 +505,28 @@ function formatAchForPrint(item) {
   return { shortTitle, extras, category: item.category, typeLabel }
 }
 
+// ─── Build discipline table rows for print ───────────────────────────────────
+
+function buildDiscTableRows(disciplineMap) {
+  const CLASSES   = ['VII','VIII','IX','X','XI','XII']
+  const DISC_ROWS = [
+    { key: 'extraDrills',  label: 'Extra Drills' },
+    { key: 'confinements', label: 'Confinements' },
+    { key: 'parentsCall',  label: "Parents' Call" },
+    { key: 'warnings',     label: 'Warnings' }
+  ]
+  return DISC_ROWS.map(row => {
+    const cells = CLASSES.map(cls => {
+      const val = (disciplineMap[cls] || {})[row.key] || ''
+      return `<td class="${val ? 'pt-disc-has-val' : ''}">${escapeHTML(String(val))}</td>`
+    }).join('')
+    return `<tr><td>${row.label}</td>${cells}</tr>`
+  }).join('')
+}
+
 // ─── Build complete print HTML ────────────────────────────────────────────────
 
-function buildPrintHTML(cadet, academicMap, competitionAch) {
+function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}) {
   const getOrd = n => {
     const num = parseInt(n); if (isNaN(num)) return n || ''
     const s = ['th','st','nd','rd'], v = num % 100
@@ -754,10 +808,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch) {
         </tr>
       </thead>
       <tbody>
-        <tr><td>Extra Drills</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Confinements</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Parents Call</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Warnings</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        ${buildDiscTableRows(disciplineMap)}
       </tbody>
     </table>
 
