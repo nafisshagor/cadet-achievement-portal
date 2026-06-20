@@ -859,7 +859,7 @@ async function saveCompetitionFromForm() {
     // Build competitionName from checked items
     const discItems = [
       { id: 'discExtraDrills',  label: 'Extra Drills' },
-      { id: 'discConfinements', label: 'Confinements' },
+      { id: 'discConfinements', label: 'Monetary Fine' },
       { id: 'discParentsCall',  label: "Parents' Call" },
       { id: 'discWarnings',     label: 'Warnings' }
     ]
@@ -884,12 +884,14 @@ async function saveCompetitionFromForm() {
 
   // In best-award mode, level was already set from honours above; skip the empty check
   const isBestAward = isBestAwardMode()
-  if (!level && !isBestAward) {
+  // Discipline records don't use a position field
+  const isDiscipline = (category === 'Discipline')
+  if (!level && !isBestAward && !isDiscipline) {
     showToast('Position is required.', 'warning')
     return
   }
 
-  if (!isBestAward) {
+  if (!isBestAward && !isDiscipline) {
     level = autoAppendPosition(level)
   }
 
@@ -1249,7 +1251,8 @@ export async function openEditAchievementForm(achievement) {
       // Parse stored "Extra Drills: 2, Warnings: 1" back into checkboxes
       const discMap = {
         'Extra Drills':  'discExtraDrills',
-        'Confinements':  'discConfinements',
+        'Monetary Fine': 'discConfinements',
+        'Confinements':  'discConfinements',   // keep for backward-compat with old records
         "Parents' Call": 'discParentsCall',
         'Warnings':      'discWarnings'
       }

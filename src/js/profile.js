@@ -377,10 +377,11 @@ export async function printProfile() {
       if (!m) return
       const label = m[1].trim()
       const count = m[2] || '\u2713'
-      if (/extra drill/i.test(label))   disciplineMap[className].extraDrills  = count
-      if (/confinement/i.test(label))   disciplineMap[className].confinements = count
-      if (/parents/i.test(label))       disciplineMap[className].parentsCall  = count
-      if (/warning/i.test(label))       disciplineMap[className].warnings     = count
+      if (/extra drill/i.test(label))     disciplineMap[className].extraDrills  = count
+      if (/monetary fine/i.test(label) || /confinement/i.test(label))
+                                          disciplineMap[className].confinements = count
+      if (/parents/i.test(label))         disciplineMap[className].parentsCall  = count
+      if (/warning/i.test(label))         disciplineMap[className].warnings     = count
     })
   })
 
@@ -510,18 +511,26 @@ function formatAchForPrint(item) {
 function buildDiscTableRows(disciplineMap) {
   const CLASSES   = ['VII','VIII','IX','X','XI','XII']
   const DISC_ROWS = [
-    { key: 'extraDrills',  label: 'Extra Drills' },
-    { key: 'confinements', label: 'Confinements' },
-    { key: 'parentsCall',  label: "Parents' Call" },
-    { key: 'warnings',     label: 'Warnings' }
+    { key: 'extraDrills',  label: 'Extra Drills',   alwaysShow: true  },
+    { key: 'confinements', label: 'Monetary Fine',  alwaysShow: false },
+    { key: 'parentsCall',  label: "Parents' Call",  alwaysShow: false },
+    { key: 'warnings',     label: 'Warnings',       alwaysShow: false }
   ]
-  return DISC_ROWS.map(row => {
-    const cells = CLASSES.map(cls => {
-      const val = (disciplineMap[cls] || {})[row.key] || ''
-      return `<td class="${val ? 'pt-disc-has-val' : ''}">${escapeHTML(String(val))}</td>`
+  return DISC_ROWS
+    .filter(row => {
+      if (row.alwaysShow) return true
+      // Only include the row if at least one class has data for it
+      return CLASSES.some(cls => !!(disciplineMap[cls] || {})[row.key])
+    })
+    .map(row => {
+      const cells = CLASSES.map(cls => {
+        const raw = (disciplineMap[cls] || {})[row.key] || ''
+        // Format numeric counts as "Nx" (e.g. "2x"), keep ✓ or empty as-is
+        const val = raw && /^\d+$/.test(raw) ? `${raw}x` : raw
+        return `<td class="${val ? 'pt-disc-has-val' : ''}">${escapeHTML(String(val))}</td>`
+      }).join('')
+      return `<tr><td>${row.label}</td>${cells}</tr>`
     }).join('')
-    return `<tr><td>${row.label}</td>${cells}</tr>`
-  }).join('')
 }
 
 // ─── Build complete print HTML ────────────────────────────────────────────────

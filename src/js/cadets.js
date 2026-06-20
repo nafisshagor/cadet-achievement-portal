@@ -1,4 +1,4 @@
-import { supabase, ROLES, COLLEGES } from './supabase'
+import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE } from './supabase'
 import { getCurrentStaff } from './auth'
 import { viewCadet, closeProfile, gotoCadetProfilePage } from './profile'
 import { openAchievementForm } from './achievements'
@@ -38,15 +38,23 @@ function showCollegeSelectionStage() {
   const container = document.getElementById('collegeCardsContainer')
   if (!container) return
 
-  container.innerHTML = COLLEGES.map(college => `
-    <button class="intake-card college-select-card" data-college="${escapeHTML(college)}">
-      <div class="intake-card-icon">
-        <i class="fa-solid fa-building-columns"></i>
-      </div>
-      <div class="intake-card-label" style="font-size:0.65rem;">Cadet College</div>
-      <div class="intake-card-value" style="font-size:0.78rem;line-height:1.25;">${escapeHTML(college.replace(' Cadet College', ''))}</div>
-    </button>
-  `).join('')
+  container.innerHTML = COLLEGES.map(college => {
+    const logo = COLLEGE_LOGOS[college]
+    const isSquare = COLLEGE_LOGO_SQUARE.has(college)
+    const shortName = college.replace(' Cadet College', '').replace(' Girls', ' Girls')
+    return `
+      <button class="intake-card college-select-card" data-college="${escapeHTML(college)}">
+        <div class="intake-card-icon college-logo-icon${isSquare ? ' college-logo-icon--square' : ''}">
+          ${logo
+            ? `<img src="${escapeHTML(logo)}" alt="${escapeHTML(college)}" class="college-card-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <span class="college-card-logo-fallback"${logo ? ' style="display:none"' : ''}><i class="fa-solid fa-building-columns"></i></span>
+        </div>
+        <div class="intake-card-label" style="font-size:0.65rem;">Cadet College</div>
+        <div class="intake-card-value" style="font-size:0.78rem;line-height:1.25;">${escapeHTML(shortName)}</div>
+      </button>
+    `
+  }).join('')
 
   container.querySelectorAll('.college-select-card').forEach(card => {
     card.addEventListener('click', async () => {

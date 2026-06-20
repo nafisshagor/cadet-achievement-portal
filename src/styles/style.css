@@ -1615,6 +1615,88 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
   background: linear-gradient(135deg, var(--primary-soft) 0%, var(--surface-solid) 100%);
 }
 
+/* ── College Logo Card Styles ──────────────────────────────── */
+.college-logo-icon {
+  background: white;
+  border-radius: 50%;
+  padding: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* Square (non-circular) variant — for logos that aren't circular */
+.college-logo-icon--square {
+  border-radius: 8px !important;
+  padding: 3px;
+}
+
+.college-card-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  display: block;
+}
+
+.college-logo-icon--square .college-card-logo {
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.college-card-logo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, #10b981 100%);
+  border-radius: 50%;
+}
+
+/* College banner (shown above intake cards) */
+.college-banner-logo {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Square variant for banner logo */
+.college-banner-logo--square {
+  border-radius: 8px !important;
+}
+
+.college-banner-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.college-banner-logo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 1.4rem;
+}
+
+[data-theme="dark"] .college-logo-icon,
+[data-theme="dark"] .college-banner-logo {
+  background: var(--surface-solid);
+}
+
 /* ============================================================
    PAGE HERO BANNERS (Color-Coded for Different Pages)
 ============================================================ */
@@ -3946,6 +4028,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
   flex-direction: column;
   gap: 4pt;
   box-sizing: border-box;
+  /* Reserve space at the bottom for the fixed footer */
+  padding-bottom: 22pt;
 }
 
 /* ── Header ─────────────────────────────────────────────── */
@@ -4322,5 +4406,11 @@ body.login-mode { overflow: hidden; height: 100vh; }
   font-size: 6.5pt;
   color: #64748b;
   flex-shrink: 0;
-  margin-top: 6pt;
+  /* Fixed to the bottom of every printed page */
+  position: fixed;
+  bottom: 0.8cm;
+  left: 1cm;
+  right: 1cm;
+  background: white;
+  margin-top: 0;
 }

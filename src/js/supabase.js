@@ -48,3 +48,26 @@ export const COLLEGES = [
   'Feni Girls Cadet College',
   'Joypurhat Girls Cadet College'
 ]
+
+// Maps full college name → logo filename in /CC_logos/
+export const COLLEGE_LOGOS = {
+  'Faujdarhat Cadet College':        '/CC_logos/FCC.jpg',
+  'Jhenaidah Cadet College':         '/CC_logos/JCC.jpg',
+  'Mirzapur Cadet College':          '/CC_logos/MCC.png',
+  'Rajshahi Cadet College':          '/CC_logos/RCC.png',
+  'Sylhet Cadet College':            '/CC_logos/SCC.png',
+  'Rangpur Cadet College':           '/CC_logos/CCR.png',
+  'Barishal Cadet College':          '/CC_logos/BCC.png',
+  'Pabna Cadet College':             '/CC_logos/PCC.png',
+  'Mymensingh Girls Cadet College':  '/CC_logos/MGCC.png',
+  'Cumilla Cadet College':           '/CC_logos/CCC.png',
+  'Feni Girls Cadet College':        '/CC_logos/FGCC.png',
+  'Joypurhat Girls Cadet College':   '/CC_logos/JGCC.png',
+}
+
+// Colleges whose logos should NOT be clipped to a circle
+// (transparent-background PNGs that are not circular in shape)
+export const COLLEGE_LOGO_SQUARE = new Set([
+  'Mirzapur Cadet College',
+  'Sylhet Cadet College',
+])

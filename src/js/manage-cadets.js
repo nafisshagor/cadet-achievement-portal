@@ -1,4 +1,4 @@
-import { supabase, ROLES } from './supabase'
+import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE } from './supabase'
 import { getCurrentStaff } from './auth'
 import { loadDashboardStats } from './dashboard'
 import { escapeHTML, showToast, setButtonLoading, formatHouse } from './ui'
@@ -6,9 +6,10 @@ import { escapeHTML, showToast, setButtonLoading, formatHouse } from './ui'
 let allManageCadets = []
 let cadetsForSelectedIntake = []
 let selectedManageIntake = null
+let selectedManageCollege = null   // null = not yet chosen (system admin only)
 let selectedCadetIds = new Set()
 
-// ─── Entry Point: Load Intakes ────────────────────────────────────────────────
+// ─── Entry Point: Load Manage Cadets ─────────────────────────────────────────
 
 export async function loadManageCadets() {
   const staff = getCurrentStaff()
@@ -30,10 +31,90 @@ export async function loadManageCadets() {
   }
 
   // Reset stages
+  document.getElementById('manageCollegeSelectionStage')?.classList.add('hidden')
   document.getElementById('manageIntakeSelectionStage')?.classList.remove('hidden')
   document.getElementById('manageCadetListStage')?.classList.add('hidden')
 
-  await loadIntakeSelection()
+  if (staff.role === ROLES.SYSTEM_ADMIN) {
+    // Show college selection first
+    selectedManageCollege = null
+    showManageCollegeSelection()
+  } else {
+    // College admin: go straight to intakes for their college
+    selectedManageCollege = staff.college
+    await loadIntakeSelection()
+  }
+}
+
+// ─── Stage 0: College Selection (System Admin only) ──────────────────────────
+
+function showManageCollegeSelection() {
+  // Ensure stage 0 is injected
+  ensureManageCollegeStage()
+
+  document.getElementById('manageCollegeSelectionStage')?.classList.remove('hidden')
+  document.getElementById('manageIntakeSelectionStage')?.classList.add('hidden')
+  document.getElementById('manageCadetListStage')?.classList.add('hidden')
+
+  const container = document.getElementById('manageCollegeCardsContainer')
+  if (!container) return
+
+  container.innerHTML = COLLEGES.map(college => {
+    const logo = COLLEGE_LOGOS[college]
+    const isSquare = COLLEGE_LOGO_SQUARE.has(college)
+    const shortName = college.replace(' Cadet College', '')
+    return `
+      <button class="intake-card manage-college-select-card" data-college="${escapeHTML(college)}">
+        <div class="intake-card-icon college-logo-icon${isSquare ? ' college-logo-icon--square' : ''}">
+          ${logo
+            ? `<img src="${escapeHTML(logo)}" alt="${escapeHTML(college)}" class="college-card-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <span class="college-card-logo-fallback"${logo ? ' style="display:none"' : ''}><i class="fa-solid fa-building-columns"></i></span>
+        </div>
+        <div class="intake-card-label" style="font-size:0.65rem;">Cadet College</div>
+        <div class="intake-card-value" style="font-size:0.78rem;line-height:1.25;">${escapeHTML(shortName)}</div>
+      </button>
+    `
+  }).join('')
+
+  container.querySelectorAll('.manage-college-select-card').forEach(card => {
+    card.addEventListener('click', async () => {
+      selectedManageCollege = card.dataset.college
+      document.getElementById('manageCollegeSelectionStage')?.classList.add('hidden')
+      await loadIntakeSelection()
+    })
+  })
+}
+
+function ensureManageCollegeStage() {
+  if (document.getElementById('manageCollegeSelectionStage')) return
+
+  const page = document.getElementById('manageCadetsPage')
+  const heroEl = page?.querySelector('.page-hero.manage-hero')
+  const intakeStage = document.getElementById('manageIntakeSelectionStage')
+
+  const stage0 = document.createElement('div')
+  stage0.id = 'manageCollegeSelectionStage'
+  stage0.className = 'hidden'
+  stage0.innerHTML = `
+    <div class="glass compact-card mb-5">
+      <div class="flex items-center gap-3">
+        <div class="page-icon blue"><i class="fa-solid fa-building-columns"></i></div>
+        <div>
+          <h3 class="compact-section-title text-slate-800">Select College to Manage</h3>
+          <p class="text-slate-500 text-sm">Choose a cadet college to manage its cadet records.</p>
+        </div>
+      </div>
+    </div>
+    <div id="manageCollegeCardsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+  `
+
+  // Insert before the intake selection stage
+  if (intakeStage) {
+    page.insertBefore(stage0, intakeStage)
+  } else {
+    page.appendChild(stage0)
+  }
 }
 
 // ─── Stage 1: Intake Selection ────────────────────────────────────────────────
@@ -44,13 +125,23 @@ async function loadIntakeSelection() {
 
   if (!container || !staff) return
 
+  // Show stage 1, hide others
+  document.getElementById('manageCollegeSelectionStage')?.classList.add('hidden')
+  document.getElementById('manageIntakeSelectionStage')?.classList.remove('hidden')
+  document.getElementById('manageCadetListStage')?.classList.add('hidden')
+
+  // Update header to show selected college with logo
+  updateManageIntakeHeader(selectedManageCollege || staff.college, staff)
+
   container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">Loading intakes...</div>`
+
+  const college = selectedManageCollege || staff.college
 
   // Fetch all cadets for this college
   const { data, error } = await supabase
     .from('cadets')
     .select('*')
-    .eq('college', staff.college)
+    .eq('college', college)
 
   if (error) {
     container.innerHTML = `<div class="col-span-full text-center py-10 text-red-500">Failed to load intakes.</div>`
@@ -107,6 +198,55 @@ async function loadIntakeSelection() {
       selectIntake(intake)
     })
   })
+}
+
+function updateManageIntakeHeader(college, staff) {
+  // Ensure the college info banner exists inside the intake selection stage
+  const stage = document.getElementById('manageIntakeSelectionStage')
+  if (!stage) return
+
+  let banner = document.getElementById('manageCollegeBanner')
+  if (!banner) {
+    banner = document.createElement('div')
+    banner.id = 'manageCollegeBanner'
+    banner.className = 'glass compact-card mb-5'
+    stage.insertBefore(banner, stage.firstChild)
+  }
+
+  const logo = COLLEGE_LOGOS[college]
+  const isSquare = COLLEGE_LOGO_SQUARE.has(college)
+  const isSystemAdmin = staff.role === ROLES.SYSTEM_ADMIN
+
+  banner.innerHTML = `
+    <div class="flex items-center gap-4 flex-wrap">
+      ${isSystemAdmin ? `
+        <button id="backToManageCollegesBtn" class="portal-btn-ghost px-4 py-2 text-sm flex-shrink-0">
+          <i class="fa-solid fa-arrow-left"></i> All Colleges
+        </button>
+      ` : ''}
+      <div class="flex items-center gap-3 flex-1">
+        <div class="college-banner-logo${isSquare ? ' college-banner-logo--square' : ''}">
+          ${logo
+            ? `<img src="${escapeHTML(logo)}" alt="${escapeHTML(college)}" class="college-banner-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <span class="college-banner-logo-fallback"${logo ? ' style="display:none"' : ''}><i class="fa-solid fa-building-columns"></i></span>
+        </div>
+        <div>
+          <h3 class="compact-section-title text-slate-800">${escapeHTML(college)}</h3>
+          <p class="text-slate-500 text-sm">Select an intake to manage its cadet records.</p>
+        </div>
+      </div>
+    </div>
+  `
+
+  // Attach back-to-colleges handler
+  if (isSystemAdmin) {
+    document.getElementById('backToManageCollegesBtn')?.addEventListener('click', () => {
+      selectedManageCollege = null
+      document.getElementById('manageIntakeSelectionStage')?.classList.add('hidden')
+      showManageCollegeSelection()
+    })
+  }
 }
 
 // ─── Stage 2: View Cadets for Selected Intake ────────────────────────────────
@@ -574,11 +714,13 @@ async function refreshAfterChange() {
   const staff = getCurrentStaff()
   if (!staff) return
 
+  const college = selectedManageCollege || staff.college
+
   // Reload all cadets
   const { data, error } = await supabase
     .from('cadets')
     .select('*')
-    .eq('college', staff.college)
+    .eq('college', college)
 
   if (!error) {
     allManageCadets = data || []
