@@ -560,7 +560,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}) 
   // Each column has: key (gradeLabel), label, subRows array of {id, label}
   const ACAD_COLS = [
     { key: 'VII',  label: 'VII',  rows: [
-      { id: 't1', label: '1st Term' },
+      { id: 't1', label: 'Survey Test' },
       { id: 't2', label: '2nd Term' },
       { id: 't3', label: '3rd Term' }
     ]},
@@ -587,7 +587,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}) 
     { key: 'XII',  label: 'XII',  rows: [
       { id: 'pre',   label: 'Pre-Test' },
       { id: 'test',  label: 'Test Exam' },
-      { id: 'model', label: 'Progress Test' }
+      { id: 'model', label: 'Model Test' }
     ]},
     { key: 'SSC',  label: 'SSC',  rows: [
       { id: 'board', label: 'GPA' },
