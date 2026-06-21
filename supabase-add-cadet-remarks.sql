@@ -4,7 +4,7 @@
 
 create table if not exists public.cadet_remarks (
   id          uuid primary key default gen_random_uuid(),
-  cadet_id    uuid not null references public.cadets(id) on delete cascade,
+  cadet_id    bigint not null references public.cadets(id) on delete cascade,
   staff_id    uuid not null references public.staff_profiles(id) on delete cascade,
   content     text not null,
   created_at  timestamptz not null default now(),
