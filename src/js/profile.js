@@ -203,7 +203,14 @@ export async function renderProfile(cadet) {
   const canEdit  = staff?.role === ROLES.FORM_MASTER
   const canPrint = staff?.role === ROLES.FORM_MASTER ||
                    staff?.role === ROLES.ADMIN ||
-                   staff?.role === ROLES.SYSTEM_ADMIN
+                   staff?.role === ROLES.SYSTEM_ADMIN ||
+                   staff?.role === ROLES.VICE_PRINCIPAL ||
+                   staff?.role === ROLES.PRINCIPAL
+
+  // Can write remarks: Form Master (own form), VP, Principal
+  const canRemark = staff?.role === ROLES.FORM_MASTER ||
+                    staff?.role === ROLES.VICE_PRINCIPAL ||
+                    staff?.role === ROLES.PRINCIPAL
 
   // Photo
   const photo = document.getElementById('cadetPhoto')
@@ -271,6 +278,7 @@ export async function renderProfile(cadet) {
   if (photoUploadBtn) photoUploadBtn.dataset.cadetId = cadet.id
 
   await loadAchievements(cadet.id, 'profileAchievements', canEdit)
+  await loadRemarks(cadet, canRemark)
 }
 
 // ─── Photo Upload ─────────────────────────────────────────────────────────────
@@ -324,6 +332,137 @@ export async function uploadProfilePhoto() {
   } finally {
     setButtonLoading('uploadPhotoBtn', false)
   }
+}
+
+// ─── Remarks ──────────────────────────────────────────────────────────────────
+
+const ROLE_LABEL = {
+  form_master:    'Form Master',
+  vice_principal: 'Vice Principal',
+  principal:      'Principal',
+}
+
+async function loadRemarks(cadet, canRemark) {
+  // Ensure the remarks container exists in the DOM
+  let section = document.getElementById('profileRemarksSection')
+  if (!section) {
+    // Inject after the achievements right column
+    const achievementsWrap = document.getElementById('profileAchievements')?.parentElement
+    if (!achievementsWrap) return
+    section = document.createElement('div')
+    section.id = 'profileRemarksSection'
+    section.className = 'mt-8'
+    achievementsWrap.appendChild(section)
+  }
+
+  // Fetch existing remarks for this cadet
+  const { data: remarks, error } = await supabase
+    .from('cadet_remarks')
+    .select('*, staff:staff_id(full_name, role)')
+    .eq('cadet_id', cadet.id)
+    .order('updated_at', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  const staff = getCurrentStaff()
+  const myRemark = (remarks || []).find(r => r.staff_id === staff?.id)
+  const otherRemarks = (remarks || []).filter(r => r.staff_id !== staff?.id)
+
+  section.innerHTML = `
+    <div class="remarks-section-header no-print">
+      <i class="fa-solid fa-comment-dots"></i>
+      <h3>Staff Remarks</h3>
+      <span class="remarks-count">${(remarks || []).length} remark${(remarks || []).length !== 1 ? 's' : ''}</span>
+    </div>
+
+    ${canRemark ? `
+      <!-- My remark editor -->
+      <div class="remark-editor-card no-print">
+        <div class="remark-editor-label">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Your Remarks
+          <span class="remark-role-badge">${ROLE_LABEL[staff?.role] || staff?.role}</span>
+        </div>
+        <textarea id="myRemarkTextarea" class="remark-textarea" placeholder="Write your remarks on this cadet's achievements..."
+          maxlength="1000">${escapeHTML(myRemark?.content || '')}</textarea>
+        <div class="remark-editor-actions">
+          <span class="remark-char-hint">Max 1000 characters</span>
+          <button id="saveRemarkBtn" class="portal-btn-primary px-5 py-2 text-sm"
+            data-cadet-id="${cadet.id}" data-remark-id="${myRemark?.id || ''}">
+            <i class="fa-solid fa-floppy-disk"></i> Save Remarks
+          </button>
+          ${myRemark ? `
+            <button id="deleteRemarkBtn" class="portal-btn-ghost px-4 py-2 text-sm text-red-500"
+              data-remark-id="${myRemark.id}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Other staff remarks (read-only) -->
+    ${otherRemarks.length ? `
+      <div class="remarks-list no-print">
+        ${otherRemarks.map(r => `
+          <div class="remark-card">
+            <div class="remark-card-header">
+              <span class="remark-author">${escapeHTML(r.staff?.full_name || 'Staff')}</span>
+              <span class="remark-role-badge">${ROLE_LABEL[r.staff?.role] || r.staff?.role || ''}</span>
+              <span class="remark-date">${new Date(r.updated_at).toLocaleDateString('en-GB')}</span>
+            </div>
+            <p class="remark-content">${escapeHTML(r.content)}</p>
+          </div>
+        `).join('')}
+      </div>
+    ` : (!canRemark && !(remarks || []).length ? `<p class="text-slate-400 text-sm py-4 no-print">No remarks recorded yet.</p>` : '')}
+  `
+
+  // Wire save/delete buttons
+  document.getElementById('saveRemarkBtn')?.addEventListener('click', async () => {
+    const content = document.getElementById('myRemarkTextarea')?.value.trim()
+    if (!content) { showToast('Remarks cannot be empty.', 'warning'); return }
+    await saveRemark(cadet.id, content)
+    await loadRemarks(cadet, canRemark)
+  })
+
+  document.getElementById('deleteRemarkBtn')?.addEventListener('click', async () => {
+    const remarkId = document.getElementById('deleteRemarkBtn').dataset.remarkId
+    if (!confirm('Delete your remarks for this cadet?')) return
+    await deleteRemark(remarkId)
+    await loadRemarks(cadet, canRemark)
+  })
+}
+
+async function saveRemark(cadetId, content) {
+  const staff = getCurrentStaff()
+  if (!staff) return
+
+  setButtonLoading('saveRemarkBtn', true, 'Saving...')
+
+  const { error } = await supabase
+    .from('cadet_remarks')
+    .upsert({
+      cadet_id:   cadetId,
+      staff_id:   staff.id,
+      content,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'cadet_id,staff_id' })
+
+  setButtonLoading('saveRemarkBtn', false)
+
+  if (error) { showToast(error.message, 'error'); return }
+  showToast('Remarks saved.')
+}
+
+async function deleteRemark(remarkId) {
+  const { error } = await supabase
+    .from('cadet_remarks')
+    .delete()
+    .eq('id', remarkId)
+
+  if (error) { showToast(error.message, 'error'); return }
+  showToast('Remarks deleted.')
 }
 
 // ─── Print ────────────────────────────────────────────────────────────────────
@@ -403,10 +542,18 @@ export async function printProfile() {
   // Pass all non-academic achievements — grouping is done inside buildPrintHTML
   const competitionAch = allAch.filter(a => a.category !== 'Academics')
 
+  // ── Fetch remarks ─────────────────────────────────────────────────────────
+  const { data: remarksRaw } = await supabase
+    .from('cadet_remarks')
+    .select('*, staff:staff_id(full_name, role)')
+    .eq('cadet_id', activeCadetId)
+    .order('updated_at', { ascending: true })
+  const printRemarks = (remarksRaw || []).filter(r => r.content?.trim())
+
   // ── Build the print frame ─────────────────────────────────────────────────
   const frame = document.createElement('div')
   frame.id = 'ccams-print-frame'
-  frame.innerHTML = buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap)
+  frame.innerHTML = buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap, printRemarks)
   document.body.appendChild(frame)
 
   // Force light theme
@@ -549,7 +696,7 @@ function buildDiscTableRows(disciplineMap) {
 
 // ─── Build complete print HTML ────────────────────────────────────────────────
 
-function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}) {
+function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, printRemarks = []) {
   const getOrd = n => {
     const num = parseInt(n); if (isNaN(num)) return n || ''
     const s = ['th','st','nd','rd'], v = num % 100
@@ -835,12 +982,46 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}) 
       </tbody>
     </table>
 
-    <!-- ══ FOOTER ════════════════════════════════════════════ -->
+    <!-- ══ REMARKS & SIGNATURES ═════════════════════════════ -->
     <div class="pt-footer">
-      <div>Form Master's Signature: ___________________________</div>
-      <div>Vice Principal's Signature: ___________________________</div>
-      <div>Principal's Signature: ___________________________</div>
-      <div>Date: _______________</div>
+
+      ${printRemarks.length ? `
+        <div class="pt-remarks-block">
+          <div class="pt-remarks-title">Staff Remarks</div>
+          <div class="pt-remarks-list">
+            ${printRemarks.map(r => {
+              const roleLabel = { form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal' }[r.staff?.role] || (r.staff?.role || '')
+              const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
+              return `
+                <div class="pt-remark-row">
+                  <span class="pt-remark-author">${escapeHTML(r.staff?.full_name || 'Staff')} <em>(${escapeHTML(roleLabel)})</em>:</span>
+                  <span class="pt-remark-text">${escapeHTML(r.content)}</span>
+                  <span class="pt-remark-date">${escapeHTML(date)}</span>
+                </div>`
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="pt-signatures">
+        <div class="pt-sig-block">
+          <div class="pt-sig-line"></div>
+          <div class="pt-sig-label">Form Master</div>
+        </div>
+        <div class="pt-sig-block">
+          <div class="pt-sig-line"></div>
+          <div class="pt-sig-label">Vice Principal</div>
+        </div>
+        <div class="pt-sig-block">
+          <div class="pt-sig-line"></div>
+          <div class="pt-sig-label">Principal</div>
+        </div>
+        <div class="pt-sig-block">
+          <div class="pt-sig-line"></div>
+          <div class="pt-sig-label">Date</div>
+        </div>
+      </div>
+
     </div>
 
   </div>`

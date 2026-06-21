@@ -248,7 +248,9 @@ function renderCadetTable(cadets, staff) {
   }
 
   const canEdit   = staff.role === ROLES.FORM_MASTER
-  const canPrint  = staff.role === ROLES.FORM_MASTER || staff.role === ROLES.ADMIN || staff.role === ROLES.SYSTEM_ADMIN
+  const canPrint  = staff.role === ROLES.FORM_MASTER || staff.role === ROLES.ADMIN ||
+                    staff.role === ROLES.SYSTEM_ADMIN || staff.role === ROLES.VICE_PRINCIPAL ||
+                    staff.role === ROLES.PRINCIPAL
   const canDelete = staff.role === ROLES.ADMIN || staff.role === ROLES.SYSTEM_ADMIN
 
   container.innerHTML = `
