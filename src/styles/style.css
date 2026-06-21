@@ -3116,10 +3116,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* Inter House ├óΓé¼ΓÇ¥ Amber/Gold Family */
 .ach-type-inter-house {
-  --section-main: #b45309;
-  --section-mid: #d97706;
-  --section-light: #f59e0b;
-  --section-soft: #fbbf24;
+  --section-main: #b8960c;
+  --section-mid: #D4AF37;
+  --section-light: #e8c84a;
+  --section-soft: #f5e27a;
 }
 .ach-type-inter-house .ach-type-header h4 { color: var(--section-main); }
 .ach-type-inter-house .ach-type-bullet { background: var(--section-mid); }
@@ -3130,10 +3130,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* Inter Cadet College ├óΓé¼ΓÇ¥ Emerald Family */
 .ach-type-inter-college {
-  --section-main: #047857;
-  --section-mid: #059669;
-  --section-light: #10b981;
-  --section-soft: #34d399;
+  --section-main: #800020;
+  --section-mid: #9a0028;
+  --section-light: #c0003a;
+  --section-soft: #e87090;
 }
 .ach-type-inter-college .ach-type-header h4 { color: var(--section-main); }
 .ach-type-inter-college .ach-type-bullet { background: var(--section-mid); }
@@ -3144,10 +3144,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* National ├óΓé¼ΓÇ¥ Blue Family */
 .ach-type-national {
-  --section-main: #1d4ed8;
-  --section-mid: #2563eb;
-  --section-light: #3b82f6;
-  --section-soft: #60a5fa;
+  --section-main: #1B4D3E;
+  --section-mid: #246050;
+  --section-light: #2e7a66;
+  --section-soft: #5aad96;
 }
 .ach-type-national .ach-type-header h4 { color: var(--section-main); }
 .ach-type-national .ach-type-bullet { background: var(--section-mid); }
@@ -3158,10 +3158,10 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* International ├óΓé¼ΓÇ¥ Purple Family */
 .ach-type-international {
-  --section-main: #6d28d9;
-  --section-mid: #7c3aed;
-  --section-light: #a855f7;
-  --section-soft: #c4b5fd;
+  --section-main: #0F52BA;
+  --section-mid: #1a65d6;
+  --section-light: #3a85f0;
+  --section-soft: #90b8f8;
 }
 .ach-type-international .ach-type-header h4 { color: var(--section-main); }
 .ach-type-international .ach-type-bullet { background: var(--section-mid); }
@@ -3172,24 +3172,24 @@ body.login-mode { overflow: hidden; height: 100vh; }
 
 /* Dark Mode ├óΓé¼ΓÇ¥ Use lighter shades for visibility */
 [data-theme="dark"] .ach-type-inter-house {
-  --section-main: #fbbf24;
-  --section-mid: #f59e0b;
-  --section-light: #d97706;
+  --section-main: #f0d060;
+  --section-mid: #D4AF37;
+  --section-light: #b8960c;
 }
 [data-theme="dark"] .ach-type-inter-college {
-  --section-main: #34d399;
-  --section-mid: #10b981;
-  --section-light: #059669;
+  --section-main: #f08090;
+  --section-mid: #c0003a;
+  --section-light: #9a0028;
 }
 [data-theme="dark"] .ach-type-national {
-  --section-main: #60a5fa;
-  --section-mid: #3b82f6;
-  --section-light: #2563eb;
+  --section-main: #5aad96;
+  --section-mid: #2e7a66;
+  --section-light: #1B4D3E;
 }
 [data-theme="dark"] .ach-type-international {
-  --section-main: #c4b5fd;
-  --section-mid: #a855f7;
-  --section-light: #7c3aed;
+  --section-main: #90b8f8;
+  --section-mid: #3a85f0;
+  --section-light: #0F52BA;
 }
 
 /* Type Body ├óΓé¼ΓÇ¥ vertical line container */
@@ -4415,12 +4415,18 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: rgba(16,185,129,0.08);
   word-break: break-word;
 }
-.pt-grp-ih-co  .pt-group-label { color: #0e7490; border-right-color: #0891b2; background: rgba(8,145,178,0.08); border-bottom-color: #bae6fd; }
-.pt-grp-ih-ex  .pt-group-label { color: #7c3aed; border-right-color: #8b5cf6; background: rgba(139,92,246,0.08); border-bottom-color: #ddd6fe; }
-.pt-grp-icc    .pt-group-label { color: #b45309; border-right-color: #f59e0b; background: rgba(245,158,11,0.08); border-bottom-color: #fde68a; }
-.pt-grp-nat    .pt-group-label { color: #1d4ed8; border-right-color: #3b82f6; background: rgba(59,130,246,0.08);  border-bottom-color: #bfdbfe; }
-.pt-grp-intl   .pt-group-label { color: #4338ca; border-right-color: #6366f1; background: rgba(99,102,241,0.08); border-bottom-color: #c7d2fe; }
-.pt-grp-other  .pt-group-label { color: #475569; border-right-color: #94a3b8; background: rgba(148,163,184,0.08); border-bottom-color: #e2e8f0; }
+/* Inter House — Gold #D4AF37 */
+.pt-grp-ih-co  .pt-group-label { color: #7a6000; border-right-color: #D4AF37; background: rgba(212,175,55,0.10); border-bottom-color: #e8d080; }
+/* IH Extra-Curricular shares the same gold */
+.pt-grp-ih-ex  .pt-group-label { color: #7a6000; border-right-color: #D4AF37; background: rgba(212,175,55,0.10); border-bottom-color: #e8d080; }
+/* Inter Cadet College — Burgundy #800020 */
+.pt-grp-icc    .pt-group-label { color: #800020; border-right-color: #800020; background: rgba(128,0,32,0.08);   border-bottom-color: #e07090; }
+/* National — Dark Green #1B4D3E */
+.pt-grp-nat    .pt-group-label { color: #1B4D3E; border-right-color: #1B4D3E; background: rgba(27,77,62,0.08);   border-bottom-color: #5aad96; }
+/* International — Cobalt Blue #0F52BA */
+.pt-grp-intl   .pt-group-label { color: #0F52BA; border-right-color: #0F52BA; background: rgba(15,82,186,0.08);  border-bottom-color: #90b8f8; }
+/* Other — Slate Grey #708090 */
+.pt-grp-other  .pt-group-label { color: #708090; border-right-color: #708090; background: rgba(112,128,144,0.08); border-bottom-color: #b0bec8; }
 
 /* Right cell: items fill ALL remaining width */
 .pt-group-items {
@@ -4448,12 +4454,12 @@ body.login-mode { overflow: hidden; height: 100vh; }
   border-radius: 3pt;
   padding: 1.5pt 5pt;
 }
-.pt-grp-ih-co  .pt-ach-row { border-color: rgba(8,145,178,0.2);  background: rgba(8,145,178,0.06);  }
-.pt-grp-ih-ex  .pt-ach-row { border-color: rgba(139,92,246,0.2); background: rgba(139,92,246,0.06); }
-.pt-grp-icc    .pt-ach-row { border-color: rgba(245,158,11,0.2); background: rgba(245,158,11,0.06); }
-.pt-grp-nat    .pt-ach-row { border-color: rgba(59,130,246,0.2);  background: rgba(59,130,246,0.06);  }
-.pt-grp-intl   .pt-ach-row { border-color: rgba(99,102,241,0.2); background: rgba(99,102,241,0.06); }
-.pt-grp-other  .pt-ach-row { border-color: rgba(148,163,184,0.2); background: rgba(148,163,184,0.06); }
+.pt-grp-ih-co  .pt-ach-row { border-color: rgba(212,175,55,0.25); background: rgba(212,175,55,0.07); }
+.pt-grp-ih-ex  .pt-ach-row { border-color: rgba(212,175,55,0.25); background: rgba(212,175,55,0.07); }
+.pt-grp-icc    .pt-ach-row { border-color: rgba(128,0,32,0.20);   background: rgba(128,0,32,0.06);   }
+.pt-grp-nat    .pt-ach-row { border-color: rgba(27,77,62,0.20);   background: rgba(27,77,62,0.06);   }
+.pt-grp-intl   .pt-ach-row { border-color: rgba(15,82,186,0.20);  background: rgba(15,82,186,0.06);  }
+.pt-grp-other  .pt-ach-row { border-color: rgba(112,128,144,0.20); background: rgba(112,128,144,0.06); }
 
 .pt-ach-dot {
   width: 3.5pt;
@@ -4462,12 +4468,12 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: #10b981;
   flex-shrink: 0;
 }
-.pt-grp-ih-co  .pt-ach-dot { background: #0891b2; }
-.pt-grp-ih-ex  .pt-ach-dot { background: #8b5cf6; }
-.pt-grp-icc    .pt-ach-dot { background: #f59e0b; }
-.pt-grp-nat    .pt-ach-dot { background: #3b82f6; }
-.pt-grp-intl   .pt-ach-dot { background: #6366f1; }
-.pt-grp-other  .pt-ach-dot { background: #94a3b8; }
+.pt-grp-ih-co  .pt-ach-dot { background: #D4AF37; }
+.pt-grp-ih-ex  .pt-ach-dot { background: #D4AF37; }
+.pt-grp-icc    .pt-ach-dot { background: #800020; }
+.pt-grp-nat    .pt-ach-dot { background: #1B4D3E; }
+.pt-grp-intl   .pt-ach-dot { background: #0F52BA; }
+.pt-grp-other  .pt-ach-dot { background: #708090; }
 
 .pt-ach-body {
   display: flex;
@@ -4488,12 +4494,12 @@ body.login-mode { overflow: hidden; height: 100vh; }
   color: #047857;
   white-space: nowrap;
 }
-.pt-grp-ih-co  .pt-ach-tags { color: #0e7490; }
-.pt-grp-ih-ex  .pt-ach-tags { color: #7c3aed; }
-.pt-grp-icc    .pt-ach-tags { color: #b45309; }
-.pt-grp-nat    .pt-ach-tags { color: #1d4ed8; }
-.pt-grp-intl   .pt-ach-tags { color: #4338ca; }
-.pt-grp-other  .pt-ach-tags { color: #475569; }
+.pt-grp-ih-co  .pt-ach-tags { color: #7a6000; }
+.pt-grp-ih-ex  .pt-ach-tags { color: #7a6000; }
+.pt-grp-icc    .pt-ach-tags { color: #800020; }
+.pt-grp-nat    .pt-ach-tags { color: #1B4D3E; }
+.pt-grp-intl   .pt-ach-tags { color: #0F52BA; }
+.pt-grp-other  .pt-ach-tags { color: #708090; }
 
 .pt-empty {
   color: #94a3b8;
