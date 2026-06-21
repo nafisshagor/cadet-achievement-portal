@@ -1505,57 +1505,6 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
   const typeOrder = ['Inter-house', 'Inter-college', 'National', 'International', 'Other']
 
   // ── Render ────────────────────────────────────────────────────────────────
-  // Build discipline block (shown once, not per-year)
-  const disciplineHtml = disciplineItems.length ? `
-    <div class="ach-type-block ach-type-discipline">
-      <div class="ach-type-header">
-        <span class="ach-type-bullet" style="background:#dc2626;"></span>
-        <h4 style="color:#dc2626;">Discipline Records</h4>
-      </div>
-      <div class="ach-type-body" style="border-left-color:#dc2626;">
-        ${disciplineItems.map(item => {
-          const parsed = parseAchievement(item)
-          // competitionName = "Extra Drills: 2, Warnings: 1"
-          const entries = (parsed.competitionName || '').split(',').map(s => s.trim()).filter(Boolean)
-          const year    = parsed.year || ''
-          const cls     = parsed.className ? ` · Class ${parsed.className}` : ''
-          return `
-            <div class="ach-competition-block">
-              <div class="ach-competition-name" style="color:#dc2626;">
-                ${escapeHTML(year)}${escapeHTML(cls)}
-              </div>
-              <div class="ach-events-list">
-                ${entries.map(e => `
-                  <div class="ach-event-row">
-                    <div class="ach-event-marker" style="background:#dc2626;"></div>
-                    <div class="ach-event-content">
-                      <div class="ach-event-line">
-                        <span class="ach-event-text" style="color:#dc2626;">${escapeHTML(e)}</span>
-                      </div>
-                    </div>
-                    ${canEdit ? `
-                      <div class="ach-event-actions no-print">
-                        <button class="edit-achievement-btn ach-edit-btn"
-                                data-achievement='${JSON.stringify(item).replace(/'/g, "&#39;")}' title="Edit">
-                          <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="delete-achievement-btn ach-del-btn"
-                                data-id="${item.id}" data-cadet-id="${item.cadet_id}" title="Delete">
-                          <i class="fa-solid fa-trash"></i>
-                        </button>
-                      </div>
-                    ` : ''}
-                  </div>
-                `).join('')}
-                ${parsed.description ? `<div class="ach-event-remarks"><i class="fa-solid fa-quote-left"></i> ${escapeHTML(parsed.description)}</div>` : ''}
-              </div>
-            </div>
-          `
-        }).join('')}
-      </div>
-    </div>
-  ` : ''
-
   const html = sortedYears.map(yearKey => {
     const group       = yearGroups[yearKey]
     const sortedTypes = typeOrder.filter(t => group.types[t])
@@ -1571,7 +1520,6 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
           </div>
           <div class="ach-type-body">
             ${Object.entries(competitions).map(([compTitle, items]) => {
-              // Show activity type badge for Inter House items
               const actBadge = (type === 'Inter-house' && items[0]?.activityType)
                 ? `<span class="ih-activity-badge">${escapeHTML(items[0].activityType)}</span>`
                 : ''
@@ -1587,6 +1535,49 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
         </div>
       `
     }).join('')
+
+    // Discipline block for this year (inline, red-themed)
+    const disciplineHtml = group.disciplines.length ? `
+      <div class="ach-type-block ach-type-discipline">
+        <div class="ach-type-header">
+          <span class="ach-type-bullet" style="background:#dc2626;"></span>
+          <h4 style="color:#dc2626;">Discipline Records</h4>
+        </div>
+        <div class="ach-type-body" style="border-left-color:#dc2626;">
+          ${group.disciplines.map(({ parsed, raw: item }) => {
+            const entries = (parsed.competitionName || '').split(',').map(s => s.trim()).filter(Boolean)
+            return `
+              <div class="ach-competition-block">
+                <div class="ach-events-list">
+                  ${entries.map(e => `
+                    <div class="ach-event-row">
+                      <div class="ach-event-marker" style="background:#dc2626;"></div>
+                      <div class="ach-event-content">
+                        <div class="ach-event-line">
+                          <span class="ach-event-text" style="color:#dc2626;">${escapeHTML(e)}</span>
+                        </div>
+                      </div>
+                      ${canEdit ? `
+                        <div class="ach-event-actions no-print">
+                          <button class="edit-achievement-btn ach-edit-btn"
+                                  data-achievement='${JSON.stringify(item).replace(/'/g, "&#39;")}' title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                          </button>
+                          <button class="delete-achievement-btn ach-del-btn"
+                                  data-id="${item.id}" data-cadet-id="${item.cadet_id}" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </div>
+                      ` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `
+          }).join('')}
+        </div>
+      </div>
+    ` : ''
 
     // Academics block for this year (if any)
     const academicsHtml = group.academics.length
@@ -1612,12 +1603,13 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
         <div class="ach-year-body">
           ${academicsHtml}
           ${competitionHtml}
+          ${disciplineHtml}
         </div>
       </div>
     `
   }).join('')
 
-  container.innerHTML = html + disciplineHtml
+  container.innerHTML = html
   wireButtons(container, canEdit)
 }
 
