@@ -538,8 +538,7 @@ export async function printProfile() {
     })
   })
 
-  // ── Separate competition achievements ────────────────────────────────────
-  // Pass all non-academic achievements — grouping is done inside buildPrintHTML
+  // ── Separate non-academic achievements (includes discipline for inline year grouping)
   const competitionAch = allAch.filter(a => a.category !== 'Academics')
 
   // ── Fetch remarks ─────────────────────────────────────────────────────────
@@ -844,7 +843,18 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
     const level   = item.level || ''
     const honours = meta.honours
     const extra   = meta.extra
-    const tags    = [level, honours, extra].filter(Boolean).join(' · ')
+    // Extract event from META
+    const desc = item.description || ''
+    const metaLine2 = desc.split('\n').find(l => l.startsWith('META|')) || ''
+    let event = ''
+    metaLine2.substring(5).split('|').forEach(pair => {
+      const [k, ...v] = pair.split('=')
+      if (k === 'event') event = v.join('=')
+    })
+    // Build the result string: "Event — Position" or just "Position"
+    const resultParts = [event, level].filter(Boolean)
+    const result = resultParts.join(' — ')
+    const tags = [result, honours, extra].filter(Boolean).join(' · ')
     return `<div class="pt-ach-row">
       <span class="pt-ach-dot"></span>
       <div class="pt-ach-body">
@@ -854,16 +864,44 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
     </div>`
   }
 
+  // Render a discipline item as a compact row inside the year group
+  function renderDisciplineAch(item) {
+    const meta = getAchMeta(item)
+    const typeLabel = 'Discipline'
+    let disciplineStr = item.level || ''
+    if (!disciplineStr) {
+      let t = (item.title || '').trim()
+      if (t.startsWith(typeLabel + ' ')) t = t.slice(typeLabel.length + 1)
+      t = t.replace(/\s+\d{4}$/, '').trim()
+      disciplineStr = t
+    }
+    const entries = disciplineStr.split(',').map(s => s.trim()).filter(Boolean)
+    return entries.map(e => {
+      // Format "Extra Drills: 2" → "Extra Drills: 2x"
+      const formatted = e.replace(/:(\s*)(\d+)$/, (_, sp, n) => `: ${n}x`)
+      return `<div class="pt-ach-row pt-disc-inline-row">
+        <span class="pt-ach-dot" style="background:#dc2626;"></span>
+        <div class="pt-ach-body">
+          <span class="pt-ach-name" style="color:#991b1b;">${escapeHTML(formatted)}</span>
+        </div>
+      </div>`
+    }).join('')
+  }
+
   // ── Group by year+class, then by category sub-section ─────────────────────
-  // Build a map: "YYYY|CLASS" → { year, className, items[] }
+  // Include ALL achievements (competitions + discipline) in the year map
   const yearClassMap = {}
   competitionAch.forEach(item => {
     const meta = getAchMeta(item)
     const key  = `${meta.year || '—'}|${meta.className || '—'}`
     if (!yearClassMap[key]) {
-      yearClassMap[key] = { year: meta.year || '—', className: meta.className || '', items: [] }
+      yearClassMap[key] = { year: meta.year || '—', className: meta.className || '', items: [], discItems: [] }
     }
-    yearClassMap[key].items.push(item)
+    if (item.category === 'Discipline') {
+      yearClassMap[key].discItems.push(item)
+    } else {
+      yearClassMap[key].items.push(item)
+    }
   })
 
   // Sort by year descending
@@ -873,7 +911,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
     return yb - ya
   })
 
-  function renderCategoryRows(items) {
+  function renderCategoryRows(items, discItems) {
     const ihCo_g         = items.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Co-Curricular')
     const ihExtra_g      = items.filter(a => a.category === 'Inter-house'   && getAchMeta(a).activityType === 'Extra-Curricular')
     const ihNoType_g     = items.filter(a => a.category === 'Inter-house'   && !getAchMeta(a).activityType)
@@ -881,6 +919,12 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
     const national_g     = items.filter(a => a.category === 'National')
     const international_g= items.filter(a => a.category === 'International')
     const other_g        = items.filter(a => a.category === 'Other')
+
+    const discHtml = discItems.length ? `
+      <div class="pt-group pt-grp-disc">
+        <div class="pt-group-label" style="color:#991b1b;border-color:#fca5a5;">Discipline</div>
+        <div class="pt-group-items"><div class="pt-group-items-inner">${discItems.map(renderDisciplineAch).join('')}</div></div>
+      </div>` : ''
 
     return [
       renderCatRow('IH Co-Curricular',    ihCo_g,          'pt-grp-ih-co'),
@@ -890,6 +934,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
       renderCatRow('National',            national_g,      'pt-grp-nat'),
       renderCatRow('International',       international_g, 'pt-grp-intl'),
       renderCatRow('Other',               other_g,         'pt-grp-other'),
+      discHtml,
     ].filter(Boolean).join('')
   }
 
@@ -901,7 +946,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
     </div>`
   }
 
-  // Build year-grouped achievement HTML
+  // Build year-grouped achievement HTML (includes discipline inline)
   const achievementsHTML = sortedKeys.length
     ? sortedKeys.map(key => {
         const grp   = yearClassMap[key]
@@ -910,7 +955,7 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
           : grp.year
         return `<div class="pt-year-group">
           <div class="pt-year-label">${escapeHTML(label)}</div>
-          <div class="pt-year-rows">${renderCategoryRows(grp.items)}</div>
+          <div class="pt-year-rows">${renderCategoryRows(grp.items, grp.discItems)}</div>
         </div>`
       }).join('')
     : `<span class="pt-empty">No achievement records found.</span>`
@@ -964,23 +1009,9 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
       </table>
     </div>
 
-    <!-- ══ ACHIEVEMENTS — FULL WIDTH ══════════════════════ -->
+    <!-- ══ ACHIEVEMENTS & DISCIPLINE — FULL WIDTH ════════════ -->
     <div class="pt-section-title">Achievements &amp; Honours</div>
     <div class="pt-ach-container">${achievementsHTML}</div>
-
-    <!-- ══ DISCIPLINE RECORD ════════════════════════════════ -->
-    <div class="pt-section-title pt-section-title-red" style="margin-top:5pt;">Discipline Record</div>
-    <table class="pt-disc-table">
-      <thead>
-        <tr>
-          <th class="pt-disc-label-head">Category</th>
-          <th>VII</th><th>VIII</th><th>IX</th><th>X</th><th>XI</th><th>XII</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${buildDiscTableRows(disciplineMap)}
-      </tbody>
-    </table>
 
     <!-- ══ STAFF REMARKS ════════════════════════════════════ -->
     ${printRemarks.length ? `
