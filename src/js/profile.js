@@ -278,7 +278,16 @@ export async function renderProfile(cadet) {
   if (photoUploadBtn) photoUploadBtn.dataset.cadetId = cadet.id
 
   await loadAchievements(cadet.id, 'profileAchievements', canEdit)
-  await loadRemarks(cadet, canRemark)
+
+  // Always remove stale remarks section before re-injecting
+  document.getElementById('profileRemarksSection')?.remove()
+
+  // Wrap in try/catch — remarks table may not exist yet (SQL migration pending)
+  try {
+    await loadRemarks(cadet, canRemark)
+  } catch (e) {
+    console.warn('Remarks unavailable:', e)
+  }
 }
 
 // ─── Photo Upload ─────────────────────────────────────────────────────────────
@@ -362,7 +371,12 @@ async function loadRemarks(cadet, canRemark) {
     .eq('cadet_id', cadet.id)
     .order('updated_at', { ascending: false })
 
-  if (error) { console.error(error); return }
+  // If table doesn't exist yet (migration not run), hide the section silently
+  if (error) {
+    console.warn('cadet_remarks query failed (table may not exist yet):', error.message)
+    section.innerHTML = ''
+    return
+  }
 
   const staff = getCurrentStaff()
   const myRemark = (remarks || []).find(r => r.staff_id === staff?.id)
