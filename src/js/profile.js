@@ -1004,24 +1004,10 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
 
     <!-- ══ FOOTER — SIGNATURES ONLY ════════════════════════ -->
     <div class="pt-footer">
-      <div class="pt-signatures">
-        <div class="pt-sig-block">
-          <div class="pt-sig-line"></div>
-          <div class="pt-sig-label">Form Master</div>
-        </div>
-        <div class="pt-sig-block">
-          <div class="pt-sig-line"></div>
-          <div class="pt-sig-label">Vice Principal</div>
-        </div>
-        <div class="pt-sig-block">
-          <div class="pt-sig-line"></div>
-          <div class="pt-sig-label">Principal</div>
-        </div>
-        <div class="pt-sig-block">
-          <div class="pt-sig-line"></div>
-          <div class="pt-sig-label">Date</div>
-        </div>
-      </div>
+      <div>Form Master's Signature: ___________________________</div>
+      <div>Vice Principal's Signature: ___________________________</div>
+      <div>Principal's Signature: ___________________________</div>
+      <div>Date: _______________</div>
     </div>
 
   </div>`
