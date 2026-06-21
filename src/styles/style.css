@@ -4552,8 +4552,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
      horizontal padding matches the @page 1cm margin */
   padding: 4pt 1cm 0;
   border-top: 0.75pt solid #94a3b8;
-  font-size: 6.5pt;
-  color: #64748b;
+  font-size: 7pt;
+  color: #1e293b;
   flex-shrink: 0;
   position: fixed;
   bottom: 0.8cm;
@@ -4588,21 +4588,21 @@ body.login-mode { overflow: hidden; height: 100vh; }
 .pt-remark-item:nth-child(even) { background: #ffffff; }
 .pt-remark-item-author {
   grid-column: 1; grid-row: 1;
-  font-size: 7pt; font-weight: 800; color: #1e3a8a; white-space: nowrap;
+  font-size: 8pt; font-weight: 800; color: #000000; white-space: nowrap;
 }
 .pt-remark-item-role {
   grid-column: 2; grid-row: 1;
-  font-size: 6pt; font-weight: 700; color: #1d4ed8;
+  font-size: 7pt; font-weight: 700; color: #1d4ed8;
   background: #dbeafe; padding: 0.5pt 5pt; border-radius: 2pt;
   align-self: center; width: fit-content;
 }
 .pt-remark-item-date {
   grid-column: 3; grid-row: 1;
-  font-size: 6pt; color: #94a3b8; white-space: nowrap; align-self: center;
+  font-size: 7pt; color: #334155; white-space: nowrap; align-self: center;
 }
 .pt-remark-item-text {
   grid-column: 1 / -1; grid-row: 2;
-  font-size: 7.5pt; color: #1e293b; line-height: 1.55;
+  font-size: 8.5pt; color: #000000; line-height: 1.6;
   white-space: pre-wrap; font-style: italic;
   border-left: 2.5pt solid #93c5fd; padding-left: 6pt;
   margin-top: 1pt;
