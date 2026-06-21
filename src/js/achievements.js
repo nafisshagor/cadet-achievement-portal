@@ -964,39 +964,49 @@ async function saveAcademicsFromForm() {
     return
   }
 
+  // ── Helper: clamp GPA to 0.00–5.00 ─────────────────────────────────────────
+  const clampGpa = v => {
+    if (!v) return v
+    const n = parseFloat(v)
+    if (isNaN(n)) return v
+    if (n > 5) { showToast('GPA cannot exceed 5.00.', 'warning'); return null }
+    if (n < 0) return '0.00'
+    return v
+  }
+
   // Collect fields by layout
   if (layout === 'terms') {
-    const t1gpa = document.getElementById('acad-t1-gpa')?.value.trim()
+    const t1gpa = clampGpa(document.getElementById('acad-t1-gpa')?.value.trim()); if (t1gpa === null) return
     const t1pos = document.getElementById('acad-t1-pos')?.value.trim()
-    const t2gpa = document.getElementById('acad-t2-gpa')?.value.trim()
+    const t2gpa = clampGpa(document.getElementById('acad-t2-gpa')?.value.trim()); if (t2gpa === null) return
     const t2pos = document.getElementById('acad-t2-pos')?.value.trim()
-    const t3gpa = document.getElementById('acad-t3-gpa')?.value.trim()
+    const t3gpa = clampGpa(document.getElementById('acad-t3-gpa')?.value.trim()); if (t3gpa === null) return
     const t3pos = document.getElementById('acad-t3-pos')?.value.trim()
     if (!t1gpa && !t2gpa && !t3gpa) { showToast('Enter at least one GPA result.', 'warning'); return }
     examData = { t1gpa, t1pos, t2gpa, t2pos, t3gpa, t3pos }
 
   } else if (layout === 'grade10') {
-    const t1gpa   = document.getElementById('acad-g10-t1-gpa')?.value.trim()
+    const t1gpa   = clampGpa(document.getElementById('acad-g10-t1-gpa')?.value.trim());   if (t1gpa === null) return
     const t1pos   = document.getElementById('acad-g10-t1-pos')?.value.trim()
-    const pregpa  = document.getElementById('acad-g10-pre-gpa')?.value.trim()
+    const pregpa  = clampGpa(document.getElementById('acad-g10-pre-gpa')?.value.trim());  if (pregpa === null) return
     const prepos  = document.getElementById('acad-g10-pre-pos')?.value.trim()
-    const testgpa = document.getElementById('acad-g10-test-gpa')?.value.trim()
+    const testgpa = clampGpa(document.getElementById('acad-g10-test-gpa')?.value.trim()); if (testgpa === null) return
     const testpos = document.getElementById('acad-g10-test-pos')?.value.trim()
     if (!t1gpa && !pregpa && !testgpa) { showToast('Enter at least one GPA result.', 'warning'); return }
     examData = { t1gpa, t1pos, pregpa, prepos, testgpa, testpos }
 
   } else if (layout === 'grade12') {
-    const pregpa   = document.getElementById('acad-g12-pre-gpa')?.value.trim()
+    const pregpa   = clampGpa(document.getElementById('acad-g12-pre-gpa')?.value.trim());   if (pregpa === null) return
     const prepos   = document.getElementById('acad-g12-pre-pos')?.value.trim()
-    const testgpa  = document.getElementById('acad-g12-test-gpa')?.value.trim()
+    const testgpa  = clampGpa(document.getElementById('acad-g12-test-gpa')?.value.trim());  if (testgpa === null) return
     const testpos  = document.getElementById('acad-g12-test-pos')?.value.trim()
-    const modelgpa = document.getElementById('acad-g12-model-gpa')?.value.trim()
+    const modelgpa = clampGpa(document.getElementById('acad-g12-model-gpa')?.value.trim()); if (modelgpa === null) return
     const modelpos = document.getElementById('acad-g12-model-pos')?.value.trim()
     if (!pregpa && !testgpa && !modelgpa) { showToast('Enter at least one GPA result.', 'warning'); return }
     examData = { pregpa, prepos, testgpa, testpos, modelgpa, modelpos }
 
   } else if (layout === 'board') {
-    const boardgpa = document.getElementById('acad-board-gpa')?.value.trim()
+    const boardgpa = clampGpa(document.getElementById('acad-board-gpa')?.value.trim()); if (boardgpa === null) return
     const boardpos = document.getElementById('acad-board-pos')?.value.trim()
     if (!boardgpa) { showToast('GPA is required for board exam results.', 'warning'); return }
     examData = { boardgpa, boardpos }
@@ -1441,12 +1451,12 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
   }
 
   // ── Build unified year groups ─────────────────────────────────────────────
-  // yearGroups[yearKey] = { label, types: { typeName: { compTitle: [items] } }, academics: [parsedAcad] }
+  // yearGroups[yearKey] = { label, types: { typeName: { compTitle: [items] } }, academics: [], disciplines: [] }
   const yearGroups = {}
 
   const ensureYear = (yearKey, yearLabel) => {
     if (!yearGroups[yearKey]) {
-      yearGroups[yearKey] = { label: yearLabel, types: {}, academics: [] }
+      yearGroups[yearKey] = { label: yearLabel, types: {}, academics: [], disciplines: [] }
     } else if (yearLabel && !yearGroups[yearKey].label.includes('(')) {
       yearGroups[yearKey].label = yearLabel
     }
@@ -1467,8 +1477,15 @@ export async function loadAchievements(cadetId, containerId = 'profileAchievemen
     yearGroups[yearKey].types[parsed.type][compKey].push({ ...parsed, _raw: item })
   })
 
-  // Discipline items — collected separately for their own block
-  const disciplineItems = data.filter(item => item.category === 'Discipline')
+  // Discipline items — slot into their year group
+  data.filter(item => item.category === 'Discipline').forEach(item => {
+    const parsed     = parseAchievement(item)
+    const yearKey    = parsed.year || 'No Year'
+    const classLabel = CLASS_TO_GRADE[parsed.className] || (parsed.className ? `Class ${parsed.className}` : '')
+    const yearLabel  = classLabel ? `${yearKey} (${classLabel})` : yearKey
+    ensureYear(yearKey, yearLabel)
+    yearGroups[yearKey].disciplines.push({ parsed, raw: item })
+  })
 
   // Academic items — slot into their year
   data.filter(item => item.category === 'Academics').forEach(item => {

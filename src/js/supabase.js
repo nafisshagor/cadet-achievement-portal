@@ -70,3 +70,19 @@ export const COLLEGE_LOGOS = {
 export const COLLEGE_LOGO_SQUARE = new Set([
   'Mirzapur Cadet College',
 ])
+
+// Primary brand color per college — used for card hover accent
+export const COLLEGE_COLORS = {
+  'Faujdarhat Cadet College':        '#1a3c6b',   // Navy blue
+  'Jhenaidah Cadet College':         '#0d5c2f',   // Forest green
+  'Mirzapur Cadet College':          '#7a1c1c',   // Dark red
+  'Rajshahi Cadet College':          '#4a235a',   // Purple
+  'Sylhet Cadet College':            '#1a5276',   // Steel blue
+  'Rangpur Cadet College':           '#145a32',   // Deep green
+  'Barishal Cadet College':          '#1b4f72',   // Ocean blue
+  'Pabna Cadet College':             '#7d6608',   // Dark gold
+  'Mymensingh Girls Cadet College':  '#6c1a4a',   // Magenta/maroon
+  'Cumilla Cadet College':           '#0e3b4a',   // Dark teal
+  'Feni Girls Cadet College':        '#5b2333',   // Rose red
+  'Joypurhat Girls Cadet College':   '#4a4a8a',   // Indigo
+}

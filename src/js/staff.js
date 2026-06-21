@@ -220,8 +220,60 @@ export async function loadStaffList() {
     return
   }
 
+  // Sort by role hierarchy, then alphabetically within each role
+  const ROLE_ORDER = { system_admin: 0, admin: 1, principal: 2, vice_principal: 3, form_master: 4 }
+  const sorted = [...data].sort((a, b) => {
+    const ro = (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9)
+    if (ro !== 0) return ro
+    return (a.full_name || '').localeCompare(b.full_name || '')
+  })
+
   selectedStaffIds.clear()
   updateBulkDeleteButton()
+
+  const ROLE_LABELS = {
+    system_admin: 'System Admin', admin: 'College Admin',
+    principal: 'Principal', vice_principal: 'Vice Principal', form_master: 'Form Master'
+  }
+
+  // Build rows with role-group separator headers
+  let lastRole = null
+  const rows = sorted.map(member => {
+    let groupHeader = ''
+    if (member.role !== lastRole) {
+      lastRole = member.role
+      groupHeader = `
+        <tr class="staff-role-group-header">
+          <td colspan="6">
+            <span class="role-badge role-${escapeHTML(member.role)}">${ROLE_LABELS[member.role] || formatRole(member.role)}</span>
+          </td>
+        </tr>`
+    }
+    return groupHeader + `
+      <tr data-staff-id="${member.id}">
+        <td>
+          ${member.id !== currentStaff.id ? `
+            <input type="checkbox" class="staff-checkbox staff-select-checkbox" data-id="${member.id}">
+          ` : ''}
+        </td>
+        <td class="font-mono text-xs">${escapeHTML(member.staff_id)}</td>
+        <td class="font-semibold">${escapeHTML(member.full_name)}</td>
+        <td><span class="role-badge role-${escapeHTML(member.role)}">${formatRole(member.role)}</span></td>
+        <td class="text-xs">${escapeHTML(member.college)}</td>
+        <td>
+          ${member.id !== currentStaff.id ? `
+            <div class="flex items-center gap-2">
+              <button data-id="${member.id}" class="edit-staff-btn staff-action-icon edit" title="Edit staff">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button data-id="${member.id}" class="remove-staff-btn staff-action-icon delete" title="Delete staff">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          ` : '<span class="text-xs text-slate-400">(You)</span>'}
+        </td>
+      </tr>`
+  }).join('')
 
   container.innerHTML = `
     <div class="portal-table-wrap">
@@ -238,33 +290,7 @@ export async function loadStaffList() {
             <th style="width: 120px;">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          ${data.map(member => `
-            <tr data-staff-id="${member.id}">
-              <td>
-                ${member.id !== currentStaff.id ? `
-                  <input type="checkbox" class="staff-checkbox staff-select-checkbox" data-id="${member.id}">
-                ` : ''}
-              </td>
-              <td class="font-mono text-xs">${escapeHTML(member.staff_id)}</td>
-              <td class="font-semibold">${escapeHTML(member.full_name)}</td>
-              <td><span class="role-badge role-${escapeHTML(member.role)}">${formatRole(member.role)}</span></td>
-              <td class="text-xs">${escapeHTML(member.college)}</td>
-              <td>
-                ${member.id !== currentStaff.id ? `
-                  <div class="flex items-center gap-2">
-                    <button data-id="${member.id}" class="edit-staff-btn staff-action-icon edit" title="Edit staff">
-                      <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button data-id="${member.id}" class="remove-staff-btn staff-action-icon delete" title="Delete staff">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                ` : '<span class="text-xs text-slate-400">(You)</span>'}
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
+        <tbody>${rows}</tbody>
       </table>
     </div>
   `

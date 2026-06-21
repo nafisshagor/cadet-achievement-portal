@@ -1,4 +1,4 @@
-import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE } from './supabase'
+import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE, COLLEGE_COLORS } from './supabase'
 import { getCurrentStaff } from './auth'
 import { loadDashboardStats } from './dashboard'
 import { escapeHTML, showToast, setButtonLoading, formatHouse } from './ui'
@@ -62,9 +62,11 @@ function showManageCollegeSelection() {
   container.innerHTML = COLLEGES.map(college => {
     const logo = COLLEGE_LOGOS[college]
     const isSquare = COLLEGE_LOGO_SQUARE.has(college)
+    const color = COLLEGE_COLORS[college] || ''
     const shortName = college.replace(' Cadet College', '')
     return `
-      <button class="intake-card manage-college-select-card" data-college="${escapeHTML(college)}">
+      <button class="intake-card manage-college-select-card" data-college="${escapeHTML(college)}"
+        ${color ? `style="--college-color:${color}"` : ''}>
         <div class="intake-card-icon college-logo-icon${isSquare ? ' college-logo-icon--square' : ''}">
           ${logo
             ? `<img src="${escapeHTML(logo)}" alt="${escapeHTML(college)}" class="college-card-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`

@@ -1453,6 +1453,18 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 [data-theme="dark"] .role-vice_principal { background: rgba(109,40,217,0.18); color: #c4b5fd; }
 [data-theme="dark"] .role-principal { background: rgba(180,83,9,0.18); color: #fcd34d; }
 
+/* Staff registry role-group separator row */
+.staff-role-group-header td {
+  padding: 10px 12px 4px;
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+[data-theme="dark"] .staff-role-group-header td {
+  background: rgba(255,255,255,0.03);
+}
+
 /* ============================================================
    MODALS
 ============================================================ */
@@ -1565,8 +1577,18 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 .intake-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-  background: linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 100%);
+  border-color: var(--college-color, var(--primary));
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--college-color, var(--primary)) 12%, var(--surface)) 0%,
+    var(--surface) 100%);
+}
+
+/* College card: set --college-color via JS inline style */
+.college-select-card:hover,
+.manage-college-select-card:hover,
+.passed-out-college-card:hover {
+  border-color: var(--college-color, var(--primary)) !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--college-color, var(--primary)) 30%, transparent) !important;
 }
 
 .intake-card-icon {
