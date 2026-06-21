@@ -4543,21 +4543,67 @@ body.login-mode { overflow: hidden; height: 100vh; }
   background: #fef2f2 !important;
 }
 
-/* ── Footer ──────────────────────────────────────────────── */
+/* ── Footer — full-width, signatures only ───────────────── */
 .pt-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 4pt;
-  border-top: 0.5pt solid #cbd5e1;
+  /* left:0/right:0 so border-top spans full page width,
+     horizontal padding matches the @page 1cm margin */
+  padding: 4pt 1cm 0;
+  border-top: 0.75pt solid #94a3b8;
   font-size: 6.5pt;
   color: #64748b;
   flex-shrink: 0;
-  /* Fixed to the bottom of every printed page */
   position: fixed;
   bottom: 0.8cm;
-  left: 1cm;
-  right: 1cm;
+  left: 0;
+  right: 0;
   background: white;
-  margin-top: 0;
+}
+
+/* ── Staff Remarks — in-body print section ──────────────── */
+.pt-section-title-remarks {
+  color: #1e40af !important;
+  border-bottom-color: #1e40af !important;
+  background: linear-gradient(90deg, #eff6ff 0%, transparent 80%) !important;
+}
+.pt-remarks-body {
+  width: 100%;
+  border: 0.75pt solid #bfdbfe;
+  border-radius: 4pt;
+  overflow: hidden;
+}
+.pt-remark-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 6pt;
+  row-gap: 2pt;
+  padding: 5pt 8pt;
+  border-bottom: 0.5pt solid #dbeafe;
+}
+.pt-remark-item:last-child { border-bottom: none; }
+.pt-remark-item:nth-child(odd)  { background: #eff6ff; }
+.pt-remark-item:nth-child(even) { background: #ffffff; }
+.pt-remark-item-author {
+  grid-column: 1; grid-row: 1;
+  font-size: 7pt; font-weight: 800; color: #1e3a8a; white-space: nowrap;
+}
+.pt-remark-item-role {
+  grid-column: 2; grid-row: 1;
+  font-size: 6pt; font-weight: 700; color: #1d4ed8;
+  background: #dbeafe; padding: 0.5pt 5pt; border-radius: 2pt;
+  align-self: center; width: fit-content;
+}
+.pt-remark-item-date {
+  grid-column: 3; grid-row: 1;
+  font-size: 6pt; color: #94a3b8; white-space: nowrap; align-self: center;
+}
+.pt-remark-item-text {
+  grid-column: 1 / -1; grid-row: 2;
+  font-size: 7.5pt; color: #1e293b; line-height: 1.55;
+  white-space: pre-wrap; font-style: italic;
+  border-left: 2.5pt solid #93c5fd; padding-left: 6pt;
+  margin-top: 1pt;
 }
