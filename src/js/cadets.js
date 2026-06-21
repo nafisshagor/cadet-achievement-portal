@@ -162,8 +162,8 @@ async function loadIntakeSelection() {
     `
   }).join('')
 
-  // Add click handlers
-  document.querySelectorAll('.intake-card').forEach(card => {
+  // Add click handlers — scoped to container to avoid duplicate listeners on other cards
+  container.querySelectorAll('.intake-card').forEach(card => {
     card.addEventListener('click', () => {
       const intake = card.dataset.intake
       selectIntake(intake)

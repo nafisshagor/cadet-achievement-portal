@@ -193,8 +193,8 @@ async function loadIntakeSelection() {
     `
   }).join('')
 
-  // Add click handlers
-  document.querySelectorAll('.manage-intake-card').forEach(card => {
+  // Add click handlers — scoped to container
+  container.querySelectorAll('.manage-intake-card').forEach(card => {
     card.addEventListener('click', () => {
       const intake = card.dataset.intake
       selectIntake(intake)
