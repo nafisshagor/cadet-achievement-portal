@@ -982,27 +982,28 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
       </tbody>
     </table>
 
-    <!-- ══ REMARKS & SIGNATURES ═════════════════════════════ -->
+    <!-- ══ STAFF REMARKS ════════════════════════════════════ -->
+    ${printRemarks.length ? `
+      <div class="pt-section-title pt-section-title-remarks" style="margin-top:6pt;">Staff Remarks</div>
+      <div class="pt-remarks-body">
+        ${printRemarks.map(r => {
+          const roleLabel = { form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal' }[r.staff?.role] || (r.staff?.role || '')
+          const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
+          return `
+            <div class="pt-remark-item">
+              <div class="pt-remark-item-header">
+                <span class="pt-remark-item-author">${escapeHTML(r.staff?.full_name || 'Staff')}</span>
+                <span class="pt-remark-item-role">${escapeHTML(roleLabel)}</span>
+                <span class="pt-remark-item-date">${escapeHTML(date)}</span>
+              </div>
+              <div class="pt-remark-item-text">${escapeHTML(r.content)}</div>
+            </div>`
+        }).join('')}
+      </div>
+    ` : ''}
+
+    <!-- ══ FOOTER — SIGNATURES ONLY ════════════════════════ -->
     <div class="pt-footer">
-
-      ${printRemarks.length ? `
-        <div class="pt-remarks-block">
-          <div class="pt-remarks-title">Staff Remarks</div>
-          <div class="pt-remarks-list">
-            ${printRemarks.map(r => {
-              const roleLabel = { form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal' }[r.staff?.role] || (r.staff?.role || '')
-              const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
-              return `
-                <div class="pt-remark-row">
-                  <span class="pt-remark-author">${escapeHTML(r.staff?.full_name || 'Staff')} <em>(${escapeHTML(roleLabel)})</em>:</span>
-                  <span class="pt-remark-text">${escapeHTML(r.content)}</span>
-                  <span class="pt-remark-date">${escapeHTML(date)}</span>
-                </div>`
-            }).join('')}
-          </div>
-        </div>
-      ` : ''}
-
       <div class="pt-signatures">
         <div class="pt-sig-block">
           <div class="pt-sig-line"></div>
@@ -1021,7 +1022,6 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
           <div class="pt-sig-label">Date</div>
         </div>
       </div>
-
     </div>
 
   </div>`
