@@ -1,20 +1,18 @@
--- ── cadet_remarks table ──────────────────────────────────────────────────────
-create table if not exists public.cadet_remarks (
-  id          uuid primary key default gen_random_uuid(),
-  cadet_id    bigint not null references public.cadets(id) on delete cascade,
-  staff_id    uuid not null references public.staff_profiles(id) on delete cascade,
-  content     text not null,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now(),
-  unique (cadet_id, staff_id)
-);
+-- ── Run this if cadet_remarks table already exists ───────────────────────────
+-- Drops old policies and recreates with new roles, adds house column
 
-create index if not exists idx_cadet_remarks_cadet  on public.cadet_remarks(cadet_id);
-create index if not exists idx_cadet_remarks_staff  on public.cadet_remarks(staff_id);
+-- Add house column to staff_profiles (safe to re-run)
+alter table public.staff_profiles
+  add column if not exists house text;
 
-alter table public.cadet_remarks enable row level security;
+-- Drop old policies
+drop policy if exists "read own college remarks"  on public.cadet_remarks;
+drop policy if exists "insert own remark"         on public.cadet_remarks;
+drop policy if exists "update own remark"         on public.cadet_remarks;
+drop policy if exists "delete own remark"         on public.cadet_remarks;
 
--- Read: any authenticated staff in the same college (or system admin)
+-- Recreate with new roles included
+
 create policy "read own college remarks"
   on public.cadet_remarks for select
   using (
@@ -26,8 +24,6 @@ create policy "read own college remarks"
     )
   );
 
--- Insert: form_master (own form), vice_principal, principal,
---         house_master (own house), adjutant, medical_officer (whole college)
 create policy "insert own remark"
   on public.cadet_remarks for insert
   with check (
@@ -64,7 +60,3 @@ create policy "update own remark"
 create policy "delete own remark"
   on public.cadet_remarks for delete
   using (staff_id = auth.uid());
-
--- ── Add house column to staff_profiles (for House Master) ─────────────────────
-alter table public.staff_profiles
-  add column if not exists house text;
