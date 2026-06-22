@@ -231,10 +231,15 @@ export async function renderProfile(cadet) {
   setText('profileClass', cadet.class_name || 'N/A')
   setText('profileForm', cadet.form || 'N/A')
 
-  // Photo upload control (form masters only)
+  // Photo upload — Form Masters AND VP/Principal/Adjutant/Medical Officer can upload
+  const canUploadPhoto = staff?.role === ROLES.FORM_MASTER ||
+                         staff?.role === ROLES.VICE_PRINCIPAL ||
+                         staff?.role === ROLES.PRINCIPAL ||
+                         staff?.role === ROLES.ADJUTANT ||
+                         staff?.role === ROLES.MEDICAL_OFFICER
   const photoUploadWrap = document.getElementById('photoUploadWrap')
   if (photoUploadWrap) {
-    if (canEdit) {
+    if (canUploadPhoto) {
       photoUploadWrap.classList.remove('hidden')
     } else {
       photoUploadWrap.classList.add('hidden')
@@ -286,9 +291,10 @@ export async function renderProfile(cadet) {
 
 export async function uploadProfilePhoto() {
   const staff = getCurrentStaff()
-
-  if (!staff || staff.role !== ROLES.FORM_MASTER) {
-    showToast('Only form masters can update cadet photos.', 'error')
+  const allowedRoles = [ROLES.FORM_MASTER, ROLES.VICE_PRINCIPAL, ROLES.PRINCIPAL,
+                        ROLES.ADJUTANT, ROLES.MEDICAL_OFFICER]
+  if (!staff || !allowedRoles.includes(staff.role)) {
+    showToast('You do not have permission to update cadet photos.', 'error')
     return
   }
 

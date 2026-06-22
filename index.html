@@ -189,6 +189,9 @@
           <button data-page="formAssignmentPage" data-sidebar-role="system_admin,admin" class="sidebar-link w-full text-left hidden">
             <i class="fa-solid fa-chalkboard-user"></i><span>Form Master Assignment</span>
           </button>
+          <button data-page="houseMasterAssignmentPage" data-sidebar-role="system_admin,admin" class="sidebar-link w-full text-left hidden">
+            <i class="fa-solid fa-house-user"></i><span>House Master Assignment</span>
+          </button>
           <button data-page="facultyTransferPage" data-sidebar-role="system_admin" class="sidebar-link w-full text-left hidden">
             <i class="fa-solid fa-right-left"></i><span>Faculty Transfer</span>
           </button>
@@ -792,7 +795,9 @@
               <!-- House field — only shown for House Master role -->
               <div id="staffHouseWrap" class="hidden">
                 <label class="portal-label">Assigned House <span class="text-red-500">*</span></label>
-                <input id="staffHouseInput" type="text" placeholder="e.g. Husain, Iqbal, Nazrul..." class="portal-input">
+                <select id="staffHouseSelect" class="portal-input">
+                  <option value="">— Select House —</option>
+                </select>
                 <p class="text-xs text-slate-400 mt-1.5">House Master will only see cadets of this house.</p>
               </div>
               <button id="registerStaffBtn" class="portal-btn-primary w-full py-3">
@@ -867,6 +872,42 @@
             </div>
             <div id="assignmentList" class="empty-state">
               <i class="fa-solid fa-chalkboard-user"></i><p>No assignments yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ HOUSE MASTER ASSIGNMENT PAGE ═══════════════════ -->
+      <section id="houseMasterAssignmentPage" class="dashboard-page hidden">
+        <div class="management-split">
+          <div class="management-card no-padding">
+            <div class="colored-card-header green-header">
+              <h3>House Master Assignment</h3>
+              <p>View house masters assigned to each house.</p>
+            </div>
+            <div class="form-stack">
+              <div>
+                <label class="portal-label">House Master <span class="text-red-500">*</span></label>
+                <select id="assignHMSelect" class="portal-input"><option value="">— Select House Master —</option></select>
+              </div>
+              <div class="warning-note">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>House is set when registering the House Master. Create their profile first.</span>
+              </div>
+              <button id="saveHMAssignmentBtn" class="portal-btn-primary w-full py-3">
+                <i class="fa-solid fa-house-user"></i> Confirm Assignment
+              </button>
+            </div>
+          </div>
+          <div class="management-card">
+            <div class="management-toolbar">
+              <div class="management-card-header">
+                <div class="page-icon green small"><i class="fa-solid fa-list-check"></i></div>
+                <div><h3>Current House Masters</h3><p>House master assignments for your college.</p></div>
+              </div>
+            </div>
+            <div id="hmAssignmentList" class="empty-state">
+              <i class="fa-solid fa-house-user"></i><p>No house masters yet.</p>
             </div>
           </div>
         </div>

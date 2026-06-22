@@ -106,3 +106,19 @@ export const COLLEGE_COLORS = {
   'Feni Girls Cadet College':        '#5b2333',   // Rose red
   'Joypurhat Girls Cadet College':   '#4a4a8a',   // Indigo
 }
+
+// Houses per college
+export const COLLEGE_HOUSES = {
+  'Faujdarhat Cadet College':        ['Husain', 'Iqbal', 'Nazrul', 'Liaquat'],
+  'Jhenaidah Cadet College':         ['Titumir', 'Khaled', 'Moazzam', 'Osmani'],
+  'Mirzapur Cadet College':          ['Bangabandhu', 'Birshreshtha', 'Shaheed', 'Muktijuddha'],
+  'Rajshahi Cadet College':          ['Zubaeri', 'Qader', 'Hamid', 'Zia'],
+  'Sylhet Cadet College':            ['Usman', 'Ali', 'Hamza', 'Khalid'],
+  'Rangpur Cadet College':           ['Akbar', 'Aurangzeb', 'Babar', 'Jahangir'],
+  'Barishal Cadet College':          ['Agha', 'Hasan', 'Hussain', 'Abbas'],
+  'Pabna Cadet College':             ['Ekushey', 'Swadhinata', 'Bijoy', 'Padma'],
+  'Mymensingh Girls Cadet College':  ['Kalpana', 'Pritilata', 'Ila', 'Matangini'],
+  'Cumilla Cadet College':           ['Shaheed', 'Muktijuddha', 'Swadhinata', 'Bijoy'],
+  'Feni Girls Cadet College':        ['Begum Rokeya', 'Sufia Kamal', 'Jahanara', 'Selina'],
+  'Joypurhat Girls Cadet College':   ['Anowara', 'Nilufar', 'Sabina', 'Jasmine'],
+}

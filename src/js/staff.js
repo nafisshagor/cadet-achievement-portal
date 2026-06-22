@@ -32,7 +32,7 @@ export async function registerStaff() {
   }
 
   const password = document.getElementById('staffInitialPassword')?.value.trim()
-  const house    = document.getElementById('staffHouseInput')?.value.trim() || null
+  const house = document.getElementById('staffHouseSelect')?.value.trim() || null
 
   if (!staffId || !fullName || !role || !password) {
     showToast('Please fill all staff registration fields.', 'warning')
@@ -697,6 +697,86 @@ async function removeAssignment(id) {
 
   showToast('Assignment removed.')
   await loadAssignmentList()
+}
+
+// ─── House Master Assignment ──────────────────────────────────────────────────
+
+export async function loadHouseMasterAssignmentPage() {
+  const currentStaff = getCurrentStaff()
+  if (!currentStaff || (currentStaff.role !== ROLES.ADMIN && currentStaff.role !== ROLES.SYSTEM_ADMIN)) return
+  await Promise.all([loadHouseMasterSelect(), loadHouseAssignmentList()])
+}
+
+async function loadHouseMasterSelect() {
+  const select = document.getElementById('assignHMSelect')
+  if (!select) return
+  const currentStaff = getCurrentStaff()
+  const { data } = await supabase
+    .from('staff_profiles')
+    .select('id, full_name, staff_id, house')
+    .eq('college', currentStaff.college)
+    .eq('role', 'house_master')
+    .order('full_name', { ascending: true })
+  select.innerHTML = `<option value="">— Select House Master —</option>` +
+    (data || []).map(hm => `<option value="${hm.id}" data-house="${escapeHTML(hm.house || '')}">${escapeHTML(hm.full_name)} (${escapeHTML(hm.house || 'No house')})</option>`).join('')
+}
+
+export async function saveHouseMasterAssignment() {
+  const currentStaff = getCurrentStaff()
+  if (!currentStaff || (currentStaff.role !== ROLES.ADMIN && currentStaff.role !== ROLES.SYSTEM_ADMIN)) {
+    showToast('Only admins can assign house masters.', 'error'); return
+  }
+  const staffUserId = document.getElementById('assignHMSelect')?.value
+  if (!staffUserId) { showToast('Please select a house master.', 'warning'); return }
+
+  // Get the house from the selected option
+  const opt = document.querySelector('#assignHMSelect option:checked')
+  const house = opt?.dataset.house || ''
+  if (!house) { showToast('Selected house master has no assigned house. Edit their profile first.', 'warning'); return }
+
+  setButtonLoading('saveHMAssignmentBtn', true, 'Saving...')
+  const { error } = await supabase
+    .from('staff_profiles')
+    .update({ house })
+    .eq('id', staffUserId)
+  setButtonLoading('saveHMAssignmentBtn', false)
+  if (error) { showToast(error.message, 'error'); return }
+  showToast('House master confirmed.')
+  await loadHouseAssignmentList()
+}
+
+async function loadHouseAssignmentList() {
+  const container = document.getElementById('hmAssignmentList')
+  const currentStaff = getCurrentStaff()
+  if (!container || !currentStaff) return
+
+  const { data, error } = await supabase
+    .from('staff_profiles')
+    .select('id, full_name, staff_id, house')
+    .eq('college', currentStaff.college)
+    .eq('role', 'house_master')
+    .order('house', { ascending: true })
+
+  if (error || !data?.length) {
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-house-user"></i><p>No house masters assigned yet.</p></div>`
+    return
+  }
+
+  container.innerHTML = `
+    <div class="portal-table-wrap">
+      <table class="portal-table w-full text-sm">
+        <thead><tr><th>House</th><th>House Master</th><th>Faculty ID</th></tr></thead>
+        <tbody>
+          ${data.map(row => `
+            <tr>
+              <td class="font-semibold">${escapeHTML(row.house || '—')}</td>
+              <td>${escapeHTML(row.full_name)}</td>
+              <td class="font-mono text-xs">${escapeHTML(row.staff_id)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>`
 }
 
 // ─── Faculty Transfer ─────────────────────────────────────────────────────────

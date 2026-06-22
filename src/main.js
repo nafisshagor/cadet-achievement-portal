@@ -2,12 +2,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import './styles/style.css'
 
 import { login, logout, checkSession, initPasswordToggle } from './js/auth'
+import { getCurrentStaff } from './js/auth'
 import { addCadet, bulkUploadCadets, setupCadetRecordsNavigation } from './js/cadets'
 import { loadManageCadets, setupManageCadetsFilters } from './js/manage-cadets'
 import { loadPassedOutIntakes, setupPassedOutNavigation } from './js/passed-out'
 import { printProfile, uploadProfilePhoto, closeProfile } from './js/profile'
 import { setupDashboardEvents } from './js/dashboard'
 import { saveAchievementFromForm, closeAchievementForm } from './js/achievements'
+import { COLLEGE_HOUSES } from './js/supabase'
 import {
   registerStaff,
   loadStaffList,
@@ -18,7 +20,9 @@ import {
   loadPromotionCadets,
   closeResetPasswordModal,
   executePasswordReset,
-  bulkDeleteStaff
+  bulkDeleteStaff,
+  loadHouseMasterAssignmentPage,
+  saveHouseMasterAssignment
 } from './js/staff'
 import { setupTheme } from './js/theme'
 import { loadPersonalInfo, updatePersonalInfo, changePassword } from './js/personal'
@@ -75,14 +79,21 @@ document.addEventListener('DOMContentLoaded', () => {
         collegeWrap.classList.remove('hidden')
       }
     }
-    // Show house field only for house_master
+    // Show house select only for house_master
     if (houseWrap) {
       if (e.target.value === 'house_master') {
         houseWrap.classList.remove('hidden')
+        populateHouseDropdown()
       } else {
         houseWrap.classList.add('hidden')
       }
     }
+  })
+
+  // When college changes, refresh house dropdown if house_master is selected
+  document.getElementById('staffCollegeSelect')?.addEventListener('change', () => {
+    const role = document.getElementById('staffRoleSelect')?.value
+    if (role === 'house_master') populateHouseDropdown()
   })
 
   // ── Reset Password Modal ──────────────────────────────────────────────────
@@ -91,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Form Assignment ───────────────────────────────────────────────────────
   document.getElementById('saveAssignmentBtn')?.addEventListener('click', saveFormAssignment)
+  document.getElementById('saveHMAssignmentBtn')?.addEventListener('click', saveHouseMasterAssignment)
 
   // ── Faculty Transfer ──────────────────────────────────────────────────────
   document.getElementById('executeFacultyTransferBtn')?.addEventListener('click', executeFacultyTransfer)
@@ -160,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pageId === 'passedOutCadetsPage') loadPassedOutIntakes()
       if (pageId === 'staffRegistryPage') loadStaffList()
       if (pageId === 'formAssignmentPage') loadFormMasterAssignmentPage()
+      if (pageId === 'houseMasterAssignmentPage') loadHouseMasterAssignmentPage()
       if (pageId === 'facultyTransferPage') loadFacultyTransferPage()
     }
   })
@@ -167,3 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTheme()
   checkSession()
 })
+
+// ── Populate house dropdown based on selected college ─────────────────────────
+function populateHouseDropdown() {
+  const select = document.getElementById('staffHouseSelect')
+  if (!select) return
+  const collegeEl = document.getElementById('staffCollegeSelect')
+  const staff = getCurrentStaff()
+  const college = (collegeEl?.value) || staff?.college || ''
+  const houses = COLLEGE_HOUSES[college] || []
+  select.innerHTML = '<option value="">— Select House —</option>' +
+    houses.map(h => `<option value="${h}">${h}</option>`).join('')
+}
