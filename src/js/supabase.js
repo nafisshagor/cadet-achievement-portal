@@ -109,16 +109,16 @@ export const COLLEGE_COLORS = {
 
 // Houses per college
 export const COLLEGE_HOUSES = {
-  'Faujdarhat Cadet College':        ['Husain', 'Iqbal', 'Nazrul', 'Liaquat'],
-  'Jhenaidah Cadet College':         ['Titumir', 'Khaled', 'Moazzam', 'Osmani'],
-  'Mirzapur Cadet College':          ['Bangabandhu', 'Birshreshtha', 'Shaheed', 'Muktijuddha'],
-  'Rajshahi Cadet College':          ['Zubaeri', 'Qader', 'Hamid', 'Zia'],
-  'Sylhet Cadet College':            ['Usman', 'Ali', 'Hamza', 'Khalid'],
-  'Rangpur Cadet College':           ['Akbar', 'Aurangzeb', 'Babar', 'Jahangir'],
-  'Barishal Cadet College':          ['Agha', 'Hasan', 'Hussain', 'Abbas'],
-  'Pabna Cadet College':             ['Ekushey', 'Swadhinata', 'Bijoy', 'Padma'],
-  'Mymensingh Girls Cadet College':  ['Kalpana', 'Pritilata', 'Ila', 'Matangini'],
-  'Cumilla Cadet College':           ['Shaheed', 'Muktijuddha', 'Swadhinata', 'Bijoy'],
-  'Feni Girls Cadet College':        ['Begum Rokeya', 'Sufia Kamal', 'Jahanara', 'Selina'],
-  'Joypurhat Girls Cadet College':   ['Anowara', 'Nilufar', 'Sabina', 'Jasmine'],
+  'Faujdarhat Cadet College':        ['Rabindra House', 'Nazrul House', 'Shahidullah House', 'Fazlul Hoque House'],
+  'Jhenaidah Cadet College':         ['Badr House', 'Khaiber House', 'Hunain House'],
+  'Mirzapur Cadet College':          ['Fazlul Huq House', 'Suhrawardy House', 'Nazrul House'],
+  'Rajshahi Cadet College':          ['Qasim House', 'Tariq House', 'Khalid House'],
+  'Sylhet Cadet College':            ['Surma House', 'Dhaleswari House', 'Kushiyara House'],
+  'Rangpur Cadet College':           ['Omar Faruque House', 'Titumir House', 'Birshrestho Jahangir House'],
+  'Barishal Cadet College':          ['Sher-e-Bangla House', 'Suhrawardy House', 'Shariatullah House'],
+  'Pabna Cadet College':             ['Siraji House', 'Bhasani House', 'Titumir House'],
+  'Mymensingh Girls Cadet College':  ['Sattya House', 'Shanti House', 'Shadachar House'],
+  'Cumilla Cadet College':           ['Titas House', 'Gomati House', 'Meghna House'],
+  'Feni Girls Cadet College':        ['Khadiza House', 'Ayesha House', 'Fatema House'],
+  'Joypurhat Girls Cadet College':   ['Sultana Razia House', 'Taramon Bibi House', 'Setara Begum House'],
 }
