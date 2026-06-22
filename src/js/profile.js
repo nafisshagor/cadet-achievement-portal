@@ -1,4 +1,4 @@
-import { supabase, ROLES } from './supabase'
+import { supabase, ROLES, canViewCadets, canAddRemarks } from './supabase'
 import { getCurrentStaff } from './auth'
 import { loadAchievements, openEditAchievementForm, deleteAchievement, openAchievementForm } from './achievements'
 import { uploadCadetPhoto } from './storage'
@@ -200,17 +200,9 @@ function closeReadOnlyProfileModal() {
 
 export async function renderProfile(cadet) {
   const staff = getCurrentStaff()
-  const canEdit  = staff?.role === ROLES.FORM_MASTER
-  const canPrint = staff?.role === ROLES.FORM_MASTER ||
-                   staff?.role === ROLES.ADMIN ||
-                   staff?.role === ROLES.SYSTEM_ADMIN ||
-                   staff?.role === ROLES.VICE_PRINCIPAL ||
-                   staff?.role === ROLES.PRINCIPAL
-
-  // Can write remarks: Form Master (own form), VP, Principal
-  const canRemark = staff?.role === ROLES.FORM_MASTER ||
-                    staff?.role === ROLES.VICE_PRINCIPAL ||
-                    staff?.role === ROLES.PRINCIPAL
+  const canEdit   = staff?.role === ROLES.FORM_MASTER
+  const canPrint  = canViewCadets(staff?.role)
+  const canRemark = canAddRemarks(staff?.role)
 
   // Photo
   const photo = document.getElementById('cadetPhoto')
@@ -346,9 +338,12 @@ export async function uploadProfilePhoto() {
 // ─── Remarks ──────────────────────────────────────────────────────────────────
 
 const ROLE_LABEL = {
-  form_master:    'Form Master',
-  vice_principal: 'Vice Principal',
-  principal:      'Principal',
+  form_master:     'Form Master',
+  vice_principal:  'Vice Principal',
+  principal:       'Principal',
+  house_master:    'House Master',
+  adjutant:        'Adjutant',
+  medical_officer: 'Medical Officer',
 }
 
 async function loadRemarks(cadet, canRemark) {
@@ -1035,7 +1030,10 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
       <div class="pt-section-title pt-section-title-remarks" style="margin-top:6pt;">Staff Remarks</div>
       <div class="pt-remarks-body">
         ${printRemarks.map(r => {
-          const roleLabel = { form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal' }[r.staff?.role] || (r.staff?.role || '')
+          const roleLabel = {
+            form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal',
+            house_master: 'House Master', adjutant: 'Adjutant', medical_officer: 'Medical Officer'
+          }[r.staff?.role] || (r.staff?.role || '')
           const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
           return `
             <div class="pt-remark-item">

@@ -243,11 +243,14 @@ async function getCollegeScopedCadets(staff) {
 }
 
 function getSubtitle(role) {
-  if (role === ROLES.SYSTEM_ADMIN) return 'System administrator with full cross-college access and management.'
-  if (role === ROLES.ADMIN) return 'College admin panel for cadet creation, staff registration, and form master assignment.'
-  if (role === ROLES.FORM_MASTER) return 'Manage achievements for your assigned form cadets.'
-  if (role === ROLES.VICE_PRINCIPAL) return 'View and monitor achievement records of your college.'
-  if (role === ROLES.PRINCIPAL) return 'Principal overview of cadet achievement records.'
+  if (role === ROLES.SYSTEM_ADMIN)    return 'System administrator with full cross-college access and management.'
+  if (role === ROLES.ADMIN)           return 'College admin panel for cadet creation, staff registration, and form master assignment.'
+  if (role === ROLES.FORM_MASTER)     return 'Manage achievements for your assigned form cadets.'
+  if (role === ROLES.VICE_PRINCIPAL)  return 'View and monitor achievement records of your college.'
+  if (role === ROLES.PRINCIPAL)       return 'Principal overview of cadet achievement records.'
+  if (role === ROLES.HOUSE_MASTER)    return 'View and add remarks on achievement records of cadets in your house.'
+  if (role === ROLES.ADJUTANT)        return 'View and add remarks on cadet achievement records across all intakes.'
+  if (role === ROLES.MEDICAL_OFFICER) return 'View and add remarks on cadet achievement records across all intakes.'
   return 'Private institutional staff portal.'
 }
 

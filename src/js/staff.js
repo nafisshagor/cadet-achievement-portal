@@ -32,6 +32,7 @@ export async function registerStaff() {
   }
 
   const password = document.getElementById('staffInitialPassword')?.value.trim()
+  const house    = document.getElementById('staffHouseInput')?.value.trim() || null
 
   if (!staffId || !fullName || !role || !password) {
     showToast('Please fill all staff registration fields.', 'warning')
@@ -48,7 +49,8 @@ export async function registerStaff() {
     return
   }
 
-  const validRoles = ['admin', 'form_master', 'vice_principal', 'principal', 'system_admin']
+  const validRoles = ['admin', 'form_master', 'vice_principal', 'principal', 'system_admin',
+                      'house_master', 'adjutant', 'medical_officer']
   if (!validRoles.includes(role)) {
     showToast('Invalid staff role.', 'error')
     return
@@ -138,7 +140,8 @@ export async function registerStaff() {
         staff_id:  staffId,
         full_name: fullName,
         role,
-        college
+        college,
+        ...(house ? { house } : {})
       }])
 
     // ── Step 3: Restore admin session ─────────────────────────────────────────
@@ -221,7 +224,10 @@ export async function loadStaffList() {
   }
 
   // Sort by role hierarchy, then alphabetically within each role
-  const ROLE_ORDER = { system_admin: 0, admin: 1, principal: 2, vice_principal: 3, form_master: 4 }
+  const ROLE_ORDER = {
+    system_admin: 0, admin: 1, principal: 2, vice_principal: 3,
+    adjutant: 4, medical_officer: 5, house_master: 6, form_master: 7
+  }
   const sorted = [...data].sort((a, b) => {
     const ro = (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9)
     if (ro !== 0) return ro
@@ -233,7 +239,8 @@ export async function loadStaffList() {
 
   const ROLE_LABELS = {
     system_admin: 'System Admin', admin: 'College Admin',
-    principal: 'Principal', vice_principal: 'Vice Principal', form_master: 'Form Master'
+    principal: 'Principal', vice_principal: 'Vice Principal', form_master: 'Form Master',
+    house_master: 'House Master', adjutant: 'Adjutant', medical_officer: 'Medical Officer'
   }
 
   // Build rows with role-group separator headers

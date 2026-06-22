@@ -12,11 +12,31 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 export const STORAGE_BUCKET = 'cadet-photos'
 
 export const ROLES = {
-  SYSTEM_ADMIN: 'system_admin',
-  ADMIN: 'admin',          // College Admin (legacy alias)
-  FORM_MASTER: 'form_master',
-  VICE_PRINCIPAL: 'vice_principal',
-  PRINCIPAL: 'principal'
+  SYSTEM_ADMIN:    'system_admin',
+  ADMIN:           'admin',
+  FORM_MASTER:     'form_master',
+  VICE_PRINCIPAL:  'vice_principal',
+  PRINCIPAL:       'principal',
+  HOUSE_MASTER:    'house_master',
+  ADJUTANT:        'adjutant',
+  MEDICAL_OFFICER: 'medical_officer'
+}
+
+// Roles that can view/print/remark cadets (but not edit achievements)
+export function canViewCadets(role) {
+  return [
+    'form_master','vice_principal','principal',
+    'house_master','adjutant','medical_officer',
+    'admin','system_admin'
+  ].includes(role)
+}
+
+// Roles that can add remarks
+export function canAddRemarks(role) {
+  return [
+    'form_master','vice_principal','principal',
+    'house_master','adjutant','medical_officer'
+  ].includes(role)
 }
 
 // Helper: returns true for both system admins and college admins

@@ -1,7 +1,4 @@
 -- ── cadet_remarks table ──────────────────────────────────────────────────────
--- One remark row per staff member per cadet.
--- Role-gating (who can write what) is enforced in application code + RLS.
-
 create table if not exists public.cadet_remarks (
   id          uuid primary key default gen_random_uuid(),
   cadet_id    bigint not null references public.cadets(id) on delete cascade,
@@ -9,17 +6,15 @@ create table if not exists public.cadet_remarks (
   content     text not null,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
-  unique (cadet_id, staff_id)   -- one remark per staff per cadet
+  unique (cadet_id, staff_id)
 );
 
--- Indexes
 create index if not exists idx_cadet_remarks_cadet  on public.cadet_remarks(cadet_id);
 create index if not exists idx_cadet_remarks_staff  on public.cadet_remarks(staff_id);
 
--- RLS
 alter table public.cadet_remarks enable row level security;
 
--- Anyone authenticated can read remarks for cadets in their college
+-- Read: any authenticated staff in the same college (or system admin)
 create policy "read own college remarks"
   on public.cadet_remarks for select
   using (
@@ -31,8 +26,8 @@ create policy "read own college remarks"
     )
   );
 
--- Form masters can only write remarks for cadets in their assigned form
--- Vice principals and Principals can write for any cadet in their college
+-- Insert: form_master (own form), vice_principal, principal,
+--         house_master (own house), adjutant, medical_officer (whole college)
 create policy "insert own remark"
   on public.cadet_remarks for insert
   with check (
@@ -43,7 +38,7 @@ create policy "insert own remark"
       where c.id = cadet_remarks.cadet_id
         and c.college = sp.college
         and (
-          sp.role in ('vice_principal', 'principal')
+          sp.role in ('vice_principal','principal','adjutant','medical_officer')
           or (
             sp.role = 'form_master'
             and exists (
@@ -53,6 +48,10 @@ create policy "insert own remark"
                 and fma.intake  = c.intake
                 and fma.form    = c.form
             )
+          )
+          or (
+            sp.role = 'house_master'
+            and lower(c.house) = lower(coalesce(sp.house, ''))
           )
         )
     )
@@ -65,3 +64,7 @@ create policy "update own remark"
 create policy "delete own remark"
   on public.cadet_remarks for delete
   using (staff_id = auth.uid());
+
+-- ── Add house column to staff_profiles (for House Master) ─────────────────────
+alter table public.staff_profiles
+  add column if not exists house text;

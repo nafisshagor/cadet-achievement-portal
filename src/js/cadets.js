@@ -1,4 +1,4 @@
-import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE, COLLEGE_COLORS } from './supabase'
+import { supabase, ROLES, COLLEGES, COLLEGE_LOGOS, COLLEGE_LOGO_SQUARE, COLLEGE_COLORS, canViewCadets } from './supabase'
 import { getCurrentStaff } from './auth'
 import { viewCadet, closeProfile, gotoCadetProfilePage } from './profile'
 import { openAchievementForm } from './achievements'
@@ -109,7 +109,7 @@ async function loadIntakeSelection() {
 
   let scopedData = data || []
 
-  // Filter for form masters
+  // Filter for form masters (assigned forms only)
   if (staff.role === ROLES.FORM_MASTER) {
     const { data: assignments } = await supabase
       .from('form_master_assignments')
@@ -123,6 +123,17 @@ async function loadIntakeSelection() {
         assignment.form === cadet.form
       )
     )
+  }
+
+  // House Masters only see intakes that have cadets in their house
+  if (staff.role === ROLES.HOUSE_MASTER && staff.house) {
+    const { data: houseCadets } = await supabase
+      .from('cadets')
+      .select('intake')
+      .eq('college', college)
+      .ilike('house', staff.house)
+    const houseIntakes = new Set((houseCadets || []).map(c => c.intake))
+    scopedData = scopedData.filter(c => houseIntakes.has(c.intake))
   }
 
   // Get intake counts
@@ -226,9 +237,16 @@ async function loadCadetsForIntake(intake, formFilter = '') {
 
   let scopedCadets = data || []
 
-  // Filter for form masters
+  // Filter for form masters (own assigned form only)
   if (staff.role === ROLES.FORM_MASTER) {
     scopedCadets = await filterAssignedCadets(scopedCadets, staff)
+  }
+
+  // Filter for house masters (own house only)
+  if (staff.role === ROLES.HOUSE_MASTER && staff.house) {
+    scopedCadets = scopedCadets.filter(c =>
+      c.house?.toLowerCase() === staff.house?.toLowerCase()
+    )
   }
 
   allCadets = scopedCadets
@@ -250,9 +268,7 @@ function renderCadetTable(cadets, staff) {
   }
 
   const canEdit   = staff.role === ROLES.FORM_MASTER
-  const canPrint  = staff.role === ROLES.FORM_MASTER || staff.role === ROLES.ADMIN ||
-                    staff.role === ROLES.SYSTEM_ADMIN || staff.role === ROLES.VICE_PRINCIPAL ||
-                    staff.role === ROLES.PRINCIPAL
+  const canPrint  = canViewCadets(staff.role)
   const canDelete = staff.role === ROLES.ADMIN || staff.role === ROLES.SYSTEM_ADMIN
 
   container.innerHTML = `

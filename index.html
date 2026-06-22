@@ -762,9 +762,12 @@
                 <label class="portal-label">Role <span class="text-red-500">*</span></label>
                 <select id="staffRoleSelect" class="portal-input">
                   <option value="form_master">Form Master</option>
-                  <option value="admin">College Admin</option>
+                  <option value="house_master">House Master</option>
+                  <option value="adjutant">Adjutant</option>
+                  <option value="medical_officer">Medical Officer</option>
                   <option value="vice_principal">Vice Principal</option>
                   <option value="principal">Principal</option>
+                  <option value="admin">College Admin</option>
                   <option value="system_admin" data-role-restricted="system_admin">System Admin</option>
                 </select>
               </div>
@@ -785,6 +788,12 @@
                 <label class="portal-label">Initial Password <span class="text-red-500">*</span></label>
                 <input id="staffInitialPassword" type="text" placeholder="Min. 5 characters" class="portal-input">
                 <p class="text-xs text-slate-400 mt-1.5">Staff can change this after first login.</p>
+              </div>
+              <!-- House field — only shown for House Master role -->
+              <div id="staffHouseWrap" class="hidden">
+                <label class="portal-label">Assigned House <span class="text-red-500">*</span></label>
+                <input id="staffHouseInput" type="text" placeholder="e.g. Husain, Iqbal, Nazrul..." class="portal-input">
+                <p class="text-xs text-slate-400 mt-1.5">House Master will only see cadets of this house.</p>
               </div>
               <button id="registerStaffBtn" class="portal-btn-primary w-full py-3">
                 <i class="fa-solid fa-user-plus"></i> Register Staff

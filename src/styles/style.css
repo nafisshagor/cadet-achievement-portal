@@ -1448,10 +1448,16 @@ input[type="file"].portal-input::file-selector-button:hover { opacity: 0.88; }
 .role-form_master { background: rgba(4,120,87,0.1); color: #047857; }
 .role-vice_principal { background: rgba(109,40,217,0.1); color: #6d28d9; }
 .role-principal { background: rgba(180,83,9,0.1); color: #b45309; }
+.role-house_master { background: rgba(8,145,178,0.1); color: #0369a1; }
+.role-adjutant { background: rgba(3,105,161,0.1); color: #075985; }
+.role-medical_officer { background: rgba(190,18,60,0.1); color: #be123c; }
 [data-theme="dark"] .role-admin { background: rgba(37,99,235,0.18); color: #93c5fd; }
 [data-theme="dark"] .role-form_master { background: rgba(4,120,87,0.18); color: #6ee7b7; }
 [data-theme="dark"] .role-vice_principal { background: rgba(109,40,217,0.18); color: #c4b5fd; }
 [data-theme="dark"] .role-principal { background: rgba(180,83,9,0.18); color: #fcd34d; }
+[data-theme="dark"] .role-house_master { background: rgba(8,145,178,0.18); color: #7dd3fc; }
+[data-theme="dark"] .role-adjutant { background: rgba(3,105,161,0.18); color: #60a5fa; }
+[data-theme="dark"] .role-medical_officer { background: rgba(190,18,60,0.18); color: #fda4af; }
 
 /* Staff registry role-group separator row */
 .staff-role-group-header td {

@@ -64,15 +64,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Hide college selector when registering a System Admin (they don't belong to one)
   document.getElementById('staffRoleSelect')?.addEventListener('change', (e) => {
     const collegeWrap = document.getElementById('staffCollegeWrap')
+    const houseWrap   = document.getElementById('staffHouseWrap')
     if (!collegeWrap) return
     const isHiddenForRole = e.target.value === 'system_admin'
     if (isHiddenForRole) {
       collegeWrap.classList.add('hidden')
     } else {
-      // Only show it back if the current user is a system admin
       const currentRole = document.getElementById('topbarRole')?.textContent || ''
       if (currentRole.includes('System Admin')) {
         collegeWrap.classList.remove('hidden')
+      }
+    }
+    // Show house field only for house_master
+    if (houseWrap) {
+      if (e.target.value === 'house_master') {
+        houseWrap.classList.remove('hidden')
+      } else {
+        houseWrap.classList.add('hidden')
       }
     }
   })
