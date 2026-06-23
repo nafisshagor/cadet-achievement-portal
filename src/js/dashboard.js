@@ -223,6 +223,16 @@ async function getCollegeScopedCadets(staff) {
     return []
   }
 
+  // House Master: only own house cadets
+  if (staff.role === ROLES.HOUSE_MASTER) {
+    const houseKeyword = (staff.house || '').trim().replace(/\s+house$/i, '').toLowerCase()
+    if (!houseKeyword) return []
+    return (data || []).filter(c => {
+      const ch = (c.house || '').toLowerCase()
+      return ch.includes(houseKeyword) || houseKeyword.includes(ch.replace(/\s+house$/i, ''))
+    })
+  }
+
   if (staff.role !== ROLES.FORM_MASTER) {
     return data || []
   }
