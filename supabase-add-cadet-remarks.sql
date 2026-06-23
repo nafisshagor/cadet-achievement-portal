@@ -69,3 +69,45 @@ create policy "update own remark" on public.cadet_remarks for update
 
 create policy "delete own remark" on public.cadet_remarks for delete
   using (staff_id = auth.uid());
+
+-- ── Fix storage: allow VP, Principal, Adjutant, Medical Officer to upload photos ──
+-- Run this in Supabase Dashboard → Storage → cadet-photos → Policies
+-- OR paste into SQL editor:
+
+-- Drop existing insert policy on the bucket (if named)
+drop policy if exists "Allow form masters to upload cadet photos" on storage.objects;
+drop policy if exists "form_master upload" on storage.objects;
+drop policy if exists "authenticated upload" on storage.objects;
+
+-- New policy: allow all staff who can view cadets to upload photos
+create policy "staff can upload cadet photos"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'cadet-photos'
+    and exists (
+      select 1 from public.staff_profiles sp
+      where sp.id = auth.uid()
+        and sp.role in (
+          'form_master','vice_principal','principal',
+          'adjutant','medical_officer','admin','system_admin'
+        )
+    )
+  );
+
+-- Allow same roles to update (upsert)
+drop policy if exists "staff can update cadet photos" on storage.objects;
+create policy "staff can update cadet photos"
+  on storage.objects for update
+  to authenticated
+  using (
+    bucket_id = 'cadet-photos'
+    and exists (
+      select 1 from public.staff_profiles sp
+      where sp.id = auth.uid()
+        and sp.role in (
+          'form_master','vice_principal','principal',
+          'adjutant','medical_officer','admin','system_admin'
+        )
+    )
+  );
