@@ -127,7 +127,7 @@ async function loadIntakeSelection() {
 
   // House Masters: fetch all cadets in their house and build intake map from those
   if (staff.role === ROLES.HOUSE_MASTER) {
-    const houseName = staff.house || ''
+    const houseName = (staff.house || '').trim()
     if (!houseName) {
       container.innerHTML = `
         <div class="col-span-full empty-state glass rounded-[var(--radius-lg)] py-16">
@@ -137,12 +137,23 @@ async function loadIntakeSelection() {
         </div>`
       return
     }
-    const { data: houseCadets } = await supabase
+
+    // Fetch ALL cadets for this college so we can match flexibly
+    const { data: allCollegeCadets } = await supabase
       .from('cadets')
-      .select('id, intake')
+      .select('id, intake, house')
       .eq('college', college)
-      .ilike('house', houseName)
-    scopedData = houseCadets || []
+
+    // Match: cadet.house contains the house name keyword (case-insensitive)
+    // e.g. "Badr House" matches "Badr" or "Badr House"
+    const houseKeyword = houseName.replace(/\s+house$/i, '').toLowerCase()
+    const filtered = (allCollegeCadets || []).filter(c => {
+      const ch = (c.house || '').toLowerCase()
+      return ch.includes(houseKeyword) || houseKeyword.includes(ch.replace(/\s+house$/i, ''))
+    })
+
+    console.log(`[HouseMaster] house="${houseName}" keyword="${houseKeyword}" matched=${filtered.length} cadets`)
+    scopedData = filtered
   }
 
   // Get intake counts
@@ -251,11 +262,13 @@ async function loadCadetsForIntake(intake, formFilter = '') {
     scopedCadets = await filterAssignedCadets(scopedCadets, staff)
   }
 
-  // Filter for house masters (own house only)
+  // Filter for house masters (own house only) — flexible match
   if (staff.role === ROLES.HOUSE_MASTER && staff.house) {
-    scopedCadets = scopedCadets.filter(c =>
-      c.house?.toLowerCase() === staff.house.toLowerCase()
-    )
+    const houseKeyword = staff.house.trim().replace(/\s+house$/i, '').toLowerCase()
+    scopedCadets = scopedCadets.filter(c => {
+      const ch = (c.house || '').toLowerCase()
+      return ch.includes(houseKeyword) || houseKeyword.includes(ch.replace(/\s+house$/i, ''))
+    })
   }
 
   allCadets = scopedCadets
