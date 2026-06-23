@@ -19,6 +19,8 @@ export function loadPersonalInfo() {
     photoEl.src = staff.photo_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name || 'Staff')}&background=10b981&color=fff&size=96`
   }
+  // Update topbar pill photo
+  setTopbarPhoto(staff.photo_url)
 }
 
 export async function updatePersonalInfo() {
@@ -119,6 +121,20 @@ function formatRole(role) {
     .join(' ')
 }
 
+export function setTopbarPhoto(photoUrl) {
+  const img  = document.getElementById('topbarStaffPhoto')
+  const icon = document.getElementById('topbarUserIcon')
+  if (!img || !icon) return
+  if (photoUrl) {
+    img.src = photoUrl
+    img.classList.remove('hidden')
+    icon.classList.add('hidden')
+  } else {
+    img.classList.add('hidden')
+    icon.classList.remove('hidden')
+  }
+}
+
 export async function uploadStaffPhoto() {
   const staff = getCurrentStaff()
   if (!staff) return
@@ -153,12 +169,8 @@ export async function uploadStaffPhoto() {
     const photoEl = document.getElementById('staffProfilePhoto')
     if (photoEl) photoEl.src = photoUrl
 
-    // Also update sidebar logo if it's an img
-    const sidebarLogo = document.getElementById('sidebarCollegeLogo')
-    if (sidebarLogo) {
-      const img = sidebarLogo.querySelector('img')
-      if (img) img.src = photoUrl
-    }
+    // Update topbar user pill photo only (NOT the sidebar logo)
+    setTopbarPhoto(photoUrl)
 
     fileInput.value = ''
     showToast('Photo updated successfully.')

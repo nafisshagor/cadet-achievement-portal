@@ -237,7 +237,14 @@
           <i class="fa-solid fa-circle-half-stroke"></i>
         </button>
         <div class="topbar-user-pill">
-          <div class="user-dot"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="user-dot" id="topbarUserDot">
+            <img id="topbarStaffPhoto"
+              src=""
+              alt="Staff"
+              class="w-full h-full rounded-full object-cover hidden"
+              onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')">
+            <i class="fa-solid fa-user-shield" id="topbarUserIcon"></i>
+          </div>
           <span id="topbarRole">Staff</span>
         </div>
       </div>

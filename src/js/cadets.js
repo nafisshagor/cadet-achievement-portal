@@ -125,15 +125,24 @@ async function loadIntakeSelection() {
     )
   }
 
-  // House Masters only see intakes that have cadets in their house
-  if (staff.role === ROLES.HOUSE_MASTER && staff.house) {
+  // House Masters: fetch all cadets in their house and build intake map from those
+  if (staff.role === ROLES.HOUSE_MASTER) {
+    const houseName = staff.house || ''
+    if (!houseName) {
+      container.innerHTML = `
+        <div class="col-span-full empty-state glass rounded-[var(--radius-lg)] py-16">
+          <i class="fa-solid fa-house-crack"></i>
+          <h3 class="text-lg font-bold text-slate-700">No House Assigned</h3>
+          <p class="text-slate-500 text-sm">Ask an admin to assign a house to your profile.</p>
+        </div>`
+      return
+    }
     const { data: houseCadets } = await supabase
       .from('cadets')
-      .select('intake')
+      .select('id, intake')
       .eq('college', college)
-      .ilike('house', staff.house)
-    const houseIntakes = new Set((houseCadets || []).map(c => c.intake))
-    scopedData = scopedData.filter(c => houseIntakes.has(c.intake))
+      .ilike('house', houseName)
+    scopedData = houseCadets || []
   }
 
   // Get intake counts
@@ -245,7 +254,7 @@ async function loadCadetsForIntake(intake, formFilter = '') {
   // Filter for house masters (own house only)
   if (staff.role === ROLES.HOUSE_MASTER && staff.house) {
     scopedCadets = scopedCadets.filter(c =>
-      c.house?.toLowerCase() === staff.house?.toLowerCase()
+      c.house?.toLowerCase() === staff.house.toLowerCase()
     )
   }
 

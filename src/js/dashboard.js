@@ -1,6 +1,7 @@
 import { supabase, ROLES } from './supabase'
 import { getCurrentStaff } from './auth'
 import { setText, escapeHTML } from './ui'
+import { setTopbarPhoto } from './personal'
 
 export function renderDashboardForRole(staff) {
   // Personalized greeting based on time of day
@@ -13,6 +14,9 @@ export function renderDashboardForRole(staff) {
   setText('staffRole', formatRole(staff.role))
   setText('staffCollege', staff.college)
   setText('topbarRole', formatRole(staff.role))
+
+  // Show staff photo in topbar if available
+  setTopbarPhoto(staff.photo_url || null)
 
   // Hide all sidebar items by default, then show those matching the current role
   document.querySelectorAll('[data-sidebar-role]').forEach(item => {
