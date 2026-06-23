@@ -111,3 +111,47 @@ create policy "staff can update cadet photos"
         )
     )
   );
+
+-- ── Staff profile photos ──────────────────────────────────────────────────────
+
+-- 1. Add photo_url to staff_profiles
+alter table public.staff_profiles
+  add column if not exists photo_url text;
+
+-- 2. Create the staff-photos storage bucket (run in Supabase Dashboard > Storage
+--    OR use the SQL below — note: bucket creation via SQL requires pg_net or
+--    use the Dashboard UI to create a PUBLIC bucket named "staff-photos")
+--
+--    In Dashboard: Storage → New Bucket → name: staff-photos → Public: ON
+--
+-- 3. Storage RLS for staff-photos bucket
+drop policy if exists "staff can upload own photo"   on storage.objects;
+drop policy if exists "staff can update own photo"   on storage.objects;
+drop policy if exists "staff photos are public"      on storage.objects;
+
+create policy "staff photos are public"
+  on storage.objects for select
+  to public
+  using (bucket_id = 'staff-photos');
+
+create policy "staff can upload own photo"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'staff-photos'
+    and exists (
+      select 1 from public.staff_profiles sp
+      where sp.id = auth.uid()
+    )
+  );
+
+create policy "staff can update own photo"
+  on storage.objects for update
+  to authenticated
+  using (
+    bucket_id = 'staff-photos'
+    and exists (
+      select 1 from public.staff_profiles sp
+      where sp.id = auth.uid()
+    )
+  );

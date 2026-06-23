@@ -25,7 +25,7 @@ import {
   saveHouseMasterAssignment
 } from './js/staff'
 import { setupTheme } from './js/theme'
-import { loadPersonalInfo, updatePersonalInfo, changePassword } from './js/personal'
+import { loadPersonalInfo, updatePersonalInfo, changePassword, uploadStaffPhoto } from './js/personal'
 
 document.addEventListener('DOMContentLoaded', () => {
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Personal Info ─────────────────────────────────────────────────────────
   document.getElementById('updatePersonalInfoBtn')?.addEventListener('click', updatePersonalInfo)
   document.getElementById('changePasswordBtn')?.addEventListener('click', changePassword)
+  document.getElementById('uploadStaffPhotoBtn')?.addEventListener('click', uploadStaffPhoto)
 
   // ── Cadet Tabs (Add Cadet page) ───────────────────────────────────────────
   document.querySelectorAll('.cadet-tab-btn').forEach(btn => {

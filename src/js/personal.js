@@ -2,15 +2,23 @@ import { supabase } from './supabase'
 import { getCurrentStaff } from './auth'
 import { showToast, setButtonLoading } from './ui'
 
+const STAFF_PHOTOS_BUCKET = 'staff-photos'
+
 export function loadPersonalInfo() {
   const staff = getCurrentStaff()
-
   if (!staff) return
 
   document.getElementById('personalFullName').value = staff.full_name || ''
   document.getElementById('personalStaffId').value = staff.staff_id || ''
   document.getElementById('personalRole').value = formatRole(staff.role || '')
   document.getElementById('personalCollege').value = staff.college || ''
+
+  // Load staff photo
+  const photoEl = document.getElementById('staffProfilePhoto')
+  if (photoEl) {
+    photoEl.src = staff.photo_url ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.full_name || 'Staff')}&background=10b981&color=fff&size=96`
+  }
 }
 
 export async function updatePersonalInfo() {
@@ -109,4 +117,54 @@ function formatRole(role) {
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
+
+export async function uploadStaffPhoto() {
+  const staff = getCurrentStaff()
+  if (!staff) return
+
+  const fileInput = document.getElementById('staffPhotoFile')
+  const file = fileInput?.files?.[0]
+  if (!file) { showToast('Please select a photo file.', 'warning'); return }
+
+  setButtonLoading('uploadStaffPhotoBtn', true, 'Uploading...')
+
+  try {
+    const ext = file.name.split('.').pop()
+    const filePath = `staff/${staff.id}-${Date.now()}.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('staff-photos')
+      .upload(filePath, file, { cacheControl: '3600', upsert: true })
+
+    if (uploadError) throw uploadError
+
+    const { data } = supabase.storage.from('staff-photos').getPublicUrl(filePath)
+    const photoUrl = data.publicUrl
+
+    const { error: updateError } = await supabase
+      .from('staff_profiles')
+      .update({ photo_url: photoUrl })
+      .eq('id', staff.id)
+
+    if (updateError) throw updateError
+
+    staff.photo_url = photoUrl
+    const photoEl = document.getElementById('staffProfilePhoto')
+    if (photoEl) photoEl.src = photoUrl
+
+    // Also update sidebar logo if it's an img
+    const sidebarLogo = document.getElementById('sidebarCollegeLogo')
+    if (sidebarLogo) {
+      const img = sidebarLogo.querySelector('img')
+      if (img) img.src = photoUrl
+    }
+
+    fileInput.value = ''
+    showToast('Photo updated successfully.')
+  } catch (err) {
+    showToast(err.message || 'Upload failed.', 'error')
+  } finally {
+    setButtonLoading('uploadStaffPhotoBtn', false)
+  }
 }
