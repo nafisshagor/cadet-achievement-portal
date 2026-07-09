@@ -155,3 +155,8 @@ create policy "staff can update own photo"
       where sp.id = auth.uid()
     )
   );
+
+-- ── System Admins: clear college field (they are universal) ──────────────────
+update public.staff_profiles
+  set college = null
+  where role = 'system_admin' and (college = 'System' or college = '');

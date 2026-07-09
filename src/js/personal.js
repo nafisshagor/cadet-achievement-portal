@@ -11,7 +11,15 @@ export function loadPersonalInfo() {
   document.getElementById('personalFullName').value = staff.full_name || ''
   document.getElementById('personalStaffId').value = staff.staff_id || ''
   document.getElementById('personalRole').value = formatRole(staff.role || '')
-  document.getElementById('personalCollege').value = staff.college || ''
+  // System admins have no college affiliation
+  const collegeField = document.getElementById('personalCollege')
+  if (collegeField) {
+    if (staff.role === 'system_admin') {
+      collegeField.value = 'Universal (All Colleges)'
+    } else {
+      collegeField.value = staff.college || ''
+    }
+  }
 
   // Load staff photo
   const photoEl = document.getElementById('staffProfilePhoto')

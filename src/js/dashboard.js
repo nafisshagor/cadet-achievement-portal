@@ -9,10 +9,14 @@ export function renderDashboardForRole(staff) {
   const firstName = (staff.full_name || '').split(' ')[0] || 'there'
   setText('portalTitle', `${greeting}, ${firstName}`)
   setText('portalSubtitle', getSubtitle(staff.role))
-  setText('heroRoleTag', `${formatRole(staff.role)} · ${staff.college || 'CCAMS'}`)
+  setText('heroRoleTag', staff.role === ROLES.SYSTEM_ADMIN
+    ? `${formatRole(staff.role)} · Universal`
+    : `${formatRole(staff.role)} · ${staff.college || 'CCAMS'}`)
   setText('staffName', staff.full_name)
   setText('staffRole', formatRole(staff.role))
-  setText('staffCollege', staff.college)
+  // System admins are universal — no college affiliation shown
+  const collegeDisplay = staff.role === ROLES.SYSTEM_ADMIN ? 'Universal' : (staff.college || '')
+  setText('staffCollege', collegeDisplay)
   setText('topbarRole', formatRole(staff.role))
 
   // Show staff photo in topbar if available

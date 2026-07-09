@@ -23,7 +23,7 @@ export async function registerStaff() {
   const collegeSelect = document.getElementById('staffCollegeSelect')
   let college = ''
   if (role === 'system_admin') {
-    college = 'System'
+    college = ''  // system admins have no college
   } else if (currentStaff.role === ROLES.SYSTEM_ADMIN) {
     college = collegeSelect?.value || ''
   } else {
@@ -266,7 +266,7 @@ export async function loadStaffList() {
         <td class="font-mono text-xs">${escapeHTML(member.staff_id)}</td>
         <td class="font-semibold">${escapeHTML(member.full_name)}</td>
         <td><span class="role-badge role-${escapeHTML(member.role)}">${formatRole(member.role)}</span></td>
-        <td class="text-xs">${escapeHTML(member.college)}</td>
+        <td class="text-xs">${escapeHTML(member.role === 'system_admin' ? 'Universal' : (member.college || '—'))}</td>
         <td>
           ${member.id !== currentStaff.id ? `
             <div class="flex items-center gap-2">
