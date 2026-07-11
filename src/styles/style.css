@@ -4203,8 +4203,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
   flex-direction: column;
   gap: 4pt;
   box-sizing: border-box;
-  /* Reserve space at the bottom for the fixed footer */
-  padding-bottom: 22pt;
+  /* Reserve enough space for the fixed footer (sig row ~14pt + padding + bottom margin) */
+  padding-bottom: 44pt;
 }
 
 /* ── Header ─────────────────────────────────────────────── */
@@ -4607,6 +4607,8 @@ body.login-mode { overflow: hidden; height: 100vh; }
   border: 0.75pt solid #bfdbfe;
   border-radius: 4pt;
   overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 .pt-remark-item {
   display: grid;

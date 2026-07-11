@@ -1033,24 +1033,26 @@ function buildPrintHTML(cadet, academicMap, competitionAch, disciplineMap = {}, 
 
     <!-- ══ STAFF REMARKS ════════════════════════════════════ -->
     ${printRemarks.length ? `
-      <div class="pt-section-title pt-section-title-remarks" style="margin-top:6pt;">Staff Remarks</div>
-      <div class="pt-remarks-body">
-        ${printRemarks.map(r => {
-          const roleLabel = {
-            form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal',
-            house_master: 'House Master', adjutant: 'Adjutant', medical_officer: 'Medical Officer'
-          }[r.staff?.role] || (r.staff?.role || '')
-          const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
-          return `
-            <div class="pt-remark-item">
-              <div class="pt-remark-item-header">
-                <span class="pt-remark-item-author">${escapeHTML(r.staff?.full_name || 'Staff')}</span>
-                <span class="pt-remark-item-role">${escapeHTML(roleLabel)}</span>
-                <span class="pt-remark-item-date">${escapeHTML(date)}</span>
-              </div>
-              <div class="pt-remark-item-text">${escapeHTML(r.content)}</div>
-            </div>`
-        }).join('')}
+      <div style="break-inside:avoid;page-break-inside:avoid;">
+        <div class="pt-section-title pt-section-title-remarks" style="margin-top:6pt;">Staff Remarks</div>
+        <div class="pt-remarks-body">
+          ${printRemarks.map(r => {
+            const roleLabel = {
+              form_master: 'Form Master', vice_principal: 'Vice Principal', principal: 'Principal',
+              house_master: 'House Master', adjutant: 'Adjutant', medical_officer: 'Medical Officer'
+            }[r.staff?.role] || (r.staff?.role || '')
+            const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : ''
+            return `
+              <div class="pt-remark-item">
+                <div class="pt-remark-item-header">
+                  <span class="pt-remark-item-author">${escapeHTML(r.staff?.full_name || 'Staff')}</span>
+                  <span class="pt-remark-item-role">${escapeHTML(roleLabel)}</span>
+                  <span class="pt-remark-item-date">${escapeHTML(date)}</span>
+                </div>
+                <div class="pt-remark-item-text">${escapeHTML(r.content)}</div>
+              </div>`
+          }).join('')}
+        </div>
       </div>
     ` : ''}
 
